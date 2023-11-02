@@ -30,6 +30,7 @@ class BarangController extends Controller
     {
         try {
             $validateData = $request->validate([
+                'id_pembelian' => 'required',
                 'kode_barang' => 'required',
                 'display' => 'required',
                 'nama' => 'required',
