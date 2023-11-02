@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BarangController;
 use App\Http\Controllers\Api\KategoriController;
 use App\Http\Controllers\Api\PembelianController;
@@ -20,6 +21,10 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+Route::post('/admin/registerStore', [AuthController::class, 'registerStore']);
+Route::post('/admin/loginAuthenticate', [AuthController::class, 'loginAuthenticate']);
+Route::get('/admin/logout', [AuthController::class, 'logout']);
 
 // Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     Route::apiResource('/admin/kategori', KategoriController::class);
