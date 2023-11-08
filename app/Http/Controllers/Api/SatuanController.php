@@ -30,8 +30,8 @@ class SatuanController extends Controller
     {
         try {
             $validateData = $request->validate([
-                'satuan' => 'required',
-                'keterangan' => 'required',
+                'nama_satuan' => 'required',
+                'ket_satuan' => 'required',
             ], [
                 'required' =>  ':attribute tidak boleh kosong!',
             ]);
@@ -58,8 +58,8 @@ class SatuanController extends Controller
     {
         try {
             $validateData = $request->validate([
-                'satuan' => 'required',
-                'keterangan' => 'required',
+                'nama_satuan' => 'required',
+                'ket_satuan' => 'required',
             ], [
                 'required' =>  ':attribute tidak boleh kosong!',
             ]);

@@ -16,7 +16,7 @@ class BarangController extends Controller
     public function index()
     {
         try {
-            $barang = Barang::with('id_kategori', 'id_satuan', 'id_suplier')->get();
+            $barang = Barang::with('kategori', 'satuan', 'suplier')->get();
             return new ApiResource(true, 'Berhasil Menampilkan Data', $barang);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);

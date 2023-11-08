@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tb_satuan', function (Blueprint $table) {
+        Schema::create('satuan', function (Blueprint $table) {
             $table->bigIncrements("id_satuan");
-            $table->string("satuan");
-            $table->text("keterangan");
+            $table->string("nama_satuan");
+            $table->text("ket_satuan")->nullable();
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('satuans');
+        Schema::dropIfExists('satuan');
     }
 };

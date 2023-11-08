@@ -9,7 +9,7 @@ class Suplier extends Model
 {
     use HasFactory;
 
-    protected $table = 'tb_suplier';
+    protected $table = 'suplier';
     protected $primaryKey = 'id_suplier';
     protected $guarded = ['id_suplier'];
 

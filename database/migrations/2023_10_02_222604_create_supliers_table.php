@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tb_suplier', function (Blueprint $table) {
+        Schema::create('suplier', function (Blueprint $table) {
             $table->bigIncrements("id_suplier");
-            $table->string("nama");
-            $table->text("alamat");
-            $table->string("no_tlp");
-            $table->text("keterangan");
+            $table->string("kode_suplier")->unique();
+            $table->string("nama_suplier");
+            $table->text("no_tlp");
+            $table->string("alamat");
+            $table->text("ket_suplier")->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('supliers');
+        Schema::dropIfExists('suplier');
     }
 };

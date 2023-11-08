@@ -7,20 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class Barang extends Model
 {
-    protected $table = 'tb_barang';
+    protected $table = 'barang';
     protected $primaryKey = 'id_barang';
     protected $guarded = ['id_barang'];
 
-    public function id_kategori()
+    public function kategori()
     {
-        return $this->belongsTo(Kategori::class, 'id_kategori', 'id_kategori');
+        return $this->belongsTo(Kategori::class, 'kategori_id', 'id_kategori');
     }
-    public function id_satuan()
+    public function satuan()
     {
-        return $this->belongsTo(Satuan::class, 'id_satuan', 'id_satuan');
+        return $this->belongsTo(Satuan::class, 'satuan_id', 'id_satuan');
     }
-    public function id_suplier()
+    public function suplier()
     {
-        return $this->belongsTo(Suplier::class, 'id_suplier', 'id_suplier');
+        return $this->belongsTo(Suplier::class, 'suplier_id', 'id_suplier');
     }
 }

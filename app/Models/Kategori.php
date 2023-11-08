@@ -9,7 +9,12 @@ class Kategori extends Model
 {
     use HasFactory;
 
-    protected $table = 'tb_kategori';
+    protected $table = 'kategori';
     protected $primaryKey = 'id_kategori';
     protected $guarded = ['id_kategori'];
+
+    public function barang()
+    {
+        return $this->hasMany(Barang::class, 'kategori_id', 'id_kategori');
+    }
 }

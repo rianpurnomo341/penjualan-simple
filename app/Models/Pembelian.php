@@ -9,7 +9,7 @@ class Pembelian extends Model
 {
     use HasFactory;
 
-    protected $table = 'tb_pembelian';
+    protected $table = 'pembelian';
     protected $primaryKey = 'id_pembelian';
     protected $guarded = ['id_pembelian'];
 }

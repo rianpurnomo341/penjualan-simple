@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tb_pembelian', function (Blueprint $table) {
-            $table->bigIncrements("id_pembelian");
-            $table->date("tanggal_pembelian");
-            $table->integer("total_harga_beli");
-            $table->integer("total_harga_jual");
-            $table->timestamps();
-        });
+        // Schema::create('tb_pembelian', function (Blueprint $table) {
+        //     $table->bigIncrements("id_pembelian");
+        //     $table->date("tanggal_pembelian");
+        //     $table->integer("total_harga_beli");
+        //     $table->integer("total_harga_jual");
+        //     $table->timestamps();
+        // });
     }
 
     /**

@@ -9,7 +9,7 @@ class Satuan extends Model
 {
     use HasFactory;
 
-    protected $table = 'tb_satuan';
+    protected $table = 'satuan';
     protected $primaryKey = 'id_satuan';
     protected $guarded = ['id_satuan'];
 }

@@ -11,26 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tb_barang', function (Blueprint $table) {
+        Schema::create('barang', function (Blueprint $table) {
             $table->bigIncrements("id_barang");
-            $table->foreignId("id_pembelian")->nullable()->constrained("tb_pembelian", "id_pembelian")->onUpdate("cascade")->onDelete("no action");
-            $table->string("kode_barang");
-            $table->text("display");
-            $table->string("nama");
-            $table->foreignId("id_kategori")->nullable()->constrained("tb_kategori", "id_kategori")->onUpdate("cascade")->onDelete("no action");
-            $table->foreignId("id_satuan")->nullable()->constrained("tb_satuan", "id_satuan")->onUpdate("cascade")->onDelete("no action");
-            $table->integer("diskon");
-            $table->integer("harga");
-            $table->text("promo");
-            $table->text("deskripsi");
-            $table->date("kadaluarsa");
-            $table->foreignId("id_suplier")->nullable()->constrained("tb_suplier", "id_suplier")->onUpdate("cascade")->onDelete("no action");
-            $table->integer("total_pembelian_unit");
-            $table->integer("total_pembelian_rp");
-            $table->integer("total_penjualan_unit");
-            $table->integer("total_penjualan_rp");
-            $table->integer("provit");
-            $table->text("keterangan");
+            $table->text("display")->nullable();
+            $table->string("kode_barang")->unique();
+            $table->string("nama_barang");
+            $table->foreignId("kategori_id")->constrained("kategori", "id_kategori")->onUpdate("cascade")->onDelete("no action")->nullable();
+            $table->foreignId("satuan_id")->constrained("satuan", "id_satuan")->onUpdate("cascade")->onDelete("no action")->nullable();
+            $table->integer("diskon")->nullable();
+            $table->integer("harga_before_diskon");
+            $table->integer("harga_after_diskon");
+            $table->date("tgl_kadaluarsa");
+            $table->text("deskripsi")->nullable();
             $table->timestamps();
         });
     }
@@ -40,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('barangs');
+        Schema::dropIfExists('barang');
     }
 };

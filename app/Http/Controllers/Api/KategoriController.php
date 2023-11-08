@@ -16,7 +16,7 @@ class KategoriController extends Controller
     public function index()
     {
         try {
-            $kategori = Kategori::all();
+            $kategori = Kategori::with('barang')->get();
             return new ApiResource(true, 'Berhasil Menampilkan Data', $kategori);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
@@ -30,8 +30,8 @@ class KategoriController extends Controller
     {
         try {
             $validateData = $request->validate([
-                'kategori' => 'required',
-                'keterangan' => 'required',
+                'nama_kategori' => 'required',
+                'ket_kategori' => 'required',
             ], [
                 'required' =>  ':attribute tidak boleh kosong!',
             ]);
@@ -58,8 +58,8 @@ class KategoriController extends Controller
     {
         try {
             $validateData = $request->validate([
-                'kategori' => 'required',
-                'keterangan' => 'required',
+                'nama_kategori' => 'required',
+                'ket_kategori' => 'required',
             ], [
                 'required' =>  ':attribute tidak boleh kosong!',
             ]);

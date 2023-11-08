@@ -14,17 +14,16 @@ class AuthController extends Controller
 {
     public function loginAuthenticate(Request $request) 
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email:dns'],
+        $validateData = $request->validate([
+            'username' => ['required'],
             'password' => ['required']
         ]);
-
-        if (Auth::attempt($credentials)) {
-            return new ApiResource(true, 'Berhasil Login', Auth::attempt($credentials));
-            // $request->session()->regenerate();
-            // return redirect()->intended('/dashboard');
+        
+        if (Auth::attempt($validateData)) {
+            $user = User::firstWhere('username', $validateData['username']);
+            return new ApiResource(true, 'Berhasil Login', $user);
         }
-        return new ApiResource(true, 'Gagal Login', []);
+        return new ApiResource(false, 'Gagal Login', []);
     }
 
     public function logout(Request $request)
@@ -32,8 +31,8 @@ class AuthController extends Controller
         try {
             Auth::logout();
             return new ApiResource(true, 'Berhasil Logout', []);
-            // $request->session()->invalidate();
-            // $request->session()->regenerateToken();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
         }
@@ -44,8 +43,8 @@ class AuthController extends Controller
         try{
             $validateData = $request->validate([
                 'name' => ['required', 'max:255'],
-                'email' => ['required', 'email:dns', 'unique:users'],
-                'password' => ['required', 'min:5', 'max:255']
+                'username' => ['required', 'unique:users'],
+                'password' => ['required', 'min:5', 'max:255'],
             ]);
 
             $validateData['password'] = Hash::make($validateData['password']);
