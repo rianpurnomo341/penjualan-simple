@@ -32,6 +32,4 @@ Route::get('/admin/logout', [AuthController::class, 'logout']);
     Route::apiResource('/admin/suplier', SuplierController::class);
     Route::apiResource('/admin/pembelian', PembelianController::class);
     Route::apiResource('/admin/barang', BarangController::class);
-    Route::apiResource('/admin/transaksi', TransaksiController::class);
-    Route::apiResource('/admin/transaksi-detail', TransaksiDetailController::class);
 // });

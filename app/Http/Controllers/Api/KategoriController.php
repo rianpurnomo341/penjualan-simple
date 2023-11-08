@@ -16,7 +16,7 @@ class KategoriController extends Controller
     public function index()
     {
         try {
-            $kategori = Kategori::with('barang')->get();
+            $kategori = Kategori::withcount('barang')->with('barang.detail_pembelian')->get();
             return new ApiResource(true, 'Berhasil Menampilkan Data', $kategori);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
@@ -65,7 +65,7 @@ class KategoriController extends Controller
             ]);
 
             $kategori = $kategori->update($validateData);
-            return new ApiResource(true, 'Data Berhasil Disimpan', $kategori);
+            return new ApiResource(true, 'Data Berhasil Disimpan', $validateData);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
         }

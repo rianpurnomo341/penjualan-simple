@@ -15,12 +15,14 @@ class Barang extends Model
     {
         return $this->belongsTo(Kategori::class, 'kategori_id', 'id_kategori');
     }
+    
     public function satuan()
     {
         return $this->belongsTo(Satuan::class, 'satuan_id', 'id_satuan');
     }
-    public function suplier()
+
+    public function detail_pembelian()
     {
-        return $this->belongsTo(Suplier::class, 'suplier_id', 'id_suplier');
+        return $this->belongsTo(DetailPembelian::class, 'detail_pembelian_id', 'id_detail_pembelian');
     }
 }

@@ -16,7 +16,7 @@ class BarangController extends Controller
     public function index()
     {
         try {
-            $barang = Barang::with('kategori', 'satuan', 'suplier')->get();
+            $barang = Barang::with('kategori', 'satuan')->get();
             return new ApiResource(true, 'Berhasil Menampilkan Data', $barang);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
@@ -30,24 +30,16 @@ class BarangController extends Controller
     {
         try {
             $validateData = $request->validate([
-                'id_pembelian' => 'required',
-                'kode_barang' => 'required',
-                'display' => 'required',
-                'nama' => 'required',
-                'id_kategori' => 'required',
-                'id_satuan' => 'required',
-                'diskon' => 'required',
-                'harga' => 'required',
-                'promo' => 'required',
-                'deskripsi' => 'required',
-                'kadaluarsa' => 'required',
-                'id_suplier' => 'required',
-                'total_pembelian_unit' => 'required',
-                'total_pembelian_rp' => 'required',
-                'total_penjualan_unit' => 'required',
-                'total_penjualan_rp' => 'required',
-                'provit' => 'required',
-                'keterangan' => 'required',
+                "display" => 'required',
+                "kode_barang" => 'required',
+                "nama_barang" => 'required',
+                "kategori_id" => 'required',
+                "satuan_id" => 'required',
+                "diskon" => 'required',
+                "harga_before_diskon" => 'required',
+                "harga_after_diskon" => 'required',
+                "tgl_kadaluarsa" => 'required',
+                "deskripsi" => 'required',
             ], [
                 'required' =>  ':attribute tidak boleh kosong!',
             ]);
@@ -65,7 +57,7 @@ class BarangController extends Controller
     public function show(Barang $barang)
     {
         try {
-            $barang = Barang::where('id_barang', $barang->id_barang)->with('id_user_karyawan', 'id_instansi')->get();
+            $barang = Barang::where('id_barang', $barang->id_barang)->with('kategori', 'satuan')->get();
             return new ApiResource(true, 'Berhasil Menampilkan Detail Data', $barang);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
@@ -79,29 +71,22 @@ class BarangController extends Controller
     {
         try {
             $validateData = $request->validate([
-                'kode_barang' => 'required',
-                'display' => 'required',
-                'nama' => 'required',
-                'id_kategori' => 'required',
-                'id_satuan' => 'required',
-                'diskon' => 'required',
-                'harga' => 'required',
-                'promo' => 'required',
-                'deskripsi' => 'required',
-                'kadaluarsa' => 'required',
-                'id_suplier' => 'required',
-                'total_pembelian_unit' => 'required',
-                'total_pembelian_rp' => 'required',
-                'total_penjualan_unit' => 'required',
-                'total_penjualan_rp' => 'required',
-                'provit' => 'required',
-                'keterangan' => 'required',
+                "display" => 'required',
+                "kode_barang" => 'required',
+                "nama_barang" => 'required',
+                "kategori_id" => 'required',
+                "satuan_id" => 'required',
+                "diskon" => 'required',
+                "harga_before_diskon" => 'required',
+                "harga_after_diskon" => 'required',
+                "tgl_kadaluarsa" => 'required',
+                "deskripsi" => 'required',
             ], [
                 'required' =>  ':attribute tidak boleh kosong!',
             ]);
 
             $barang = $barang->update($validateData);
-            return new ApiResource(true, 'Data Berhasil Disimpan', $barang);
+            return new ApiResource(true, 'Data Berhasil Disimpan', $validateData);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
         }

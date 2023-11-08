@@ -12,4 +12,9 @@ class Satuan extends Model
     protected $table = 'satuan';
     protected $primaryKey = 'id_satuan';
     protected $guarded = ['id_satuan'];
+
+    public function barang()
+    {
+        return $this->hasMany(Barang::class, 'satuan_id', 'id_satuan');
+    }
 }

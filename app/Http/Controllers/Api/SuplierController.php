@@ -30,7 +30,8 @@ class SuplierController extends Controller
     {
         try {
             $validateData = $request->validate([
-                'nama' => 'required',
+                'kode_suplier' => 'required',
+                'nama_suplier' => 'required',
                 'alamat' => 'required',
                 'no_tlp' => 'required',
                 'keterangan' => 'required',
@@ -60,7 +61,8 @@ class SuplierController extends Controller
     {
         try {
             $validateData = $request->validate([
-                'nama' => 'required',
+                'kode_suplier' => 'required',
+                'nama_suplier' => 'required',
                 'alamat' => 'required',
                 'no_tlp' => 'required',
                 'keterangan' => 'required',
@@ -69,7 +71,7 @@ class SuplierController extends Controller
             ]);
 
             $suplier = $suplier->update($validateData);
-            return new ApiResource(true, 'Data Berhasil Disimpan', $suplier);
+            return new ApiResource(true, 'Data Berhasil Disimpan', $validateData);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
         }
