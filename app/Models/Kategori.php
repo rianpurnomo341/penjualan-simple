@@ -17,9 +17,4 @@ class Kategori extends Model
     {
         return $this->hasMany(Barang::class, 'kategori_id', 'id_kategori');
     }
-
-    public function detail_pembelian()
-    {
-        return $this->hasMany(DetailPembelian::class, 'detail_pembelian_id', 'id_detail_pembelian');
-    }
 }

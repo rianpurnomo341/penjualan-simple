@@ -14,8 +14,8 @@ class DetailPembelian extends Model
     protected $guarded = ['id_detail_pembelian'];
     
 
-    public function barang()
-    {
-        return $this->hasMany(Barang::class, 'barang_id', 'id_barang');
-    }
+    // public function barang()
+    // {
+    //     return $this->hasMany(Barang::class, 'barang_id', 'id_barang');
+    // }
 }

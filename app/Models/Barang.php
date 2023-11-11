@@ -23,6 +23,6 @@ class Barang extends Model
 
     public function detail_pembelian()
     {
-        return $this->belongsTo(DetailPembelian::class, 'detail_pembelian_id', 'id_detail_pembelian');
+        return $this->hasMany(DetailPembelian::class, 'barang_id', 'id_barang');
     }
 }
