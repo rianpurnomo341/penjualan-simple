@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('detail_pembelian', function (Blueprint $table) {
             $table->bigIncrements('id_detail_pembelian');
             $table->foreignId("barang_id")->constrained("barang", "id_barang")->onUpdate("cascade")->onDelete("no action")->nullable();
+            $table->foreignId("pembelian_id")->constrained("pembelian", "id_pembelian")->onUpdate("cascade")->onDelete("no action")->nullable();
             $table->integer('qty');
             $table->timestamps();
         });

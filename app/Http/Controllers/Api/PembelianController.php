@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResource;
+use App\Models\DetailPembelian;
+use App\Models\Laporan;
 use App\Models\Pembelian;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 
@@ -16,7 +19,7 @@ class PembelianController extends Controller
     public function index()
     {
         try {
-            $pembelian = Pembelian::all();
+            $pembelian = Pembelian::with('suplier','detail_pembelian')->get();
             return new ApiResource(true, 'Berhasil Menampilkan Data', $pembelian);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
@@ -28,17 +31,58 @@ class PembelianController extends Controller
      */
     public function store(Request $request)
     {
+        $waktu_sekarang = Carbon::now()->format('H:i:s');
+        $tgl_sekarang = Carbon::now()->format('Y-m-d');
+        
         try {
-            $validateData = $request->validate([
-                'tanggal_pembelian' => 'required',
-                'total_harga_beli' => 'required',
-                'total_harga_jual' => 'required',
+            $validateDataPenjualan = $request->validate([
+
+                "suplier_id" => 'required',
+                "total_pembelian" => 'required',
+                "jml_bayar_pembelian" => 'required',
+                "jml_kembalian_pembelian" => 'required',
             ], [
                 'required' =>  ':attribute tidak boleh kosong!',
             ]);
-    
-            $pembelian = Pembelian::create($validateData);
-            return new ApiResource(true, 'Data Berhasil Disimpan', $pembelian);
+
+            $validateDataPenjualan["tanggal_pembelian"] = $tgl_sekarang;            
+            $pembelian = Pembelian::create($validateDataPenjualan);
+            
+            try {
+                foreach ($request->item as $key => $value) {
+                    $dataDetailPembelian = [
+                        "barang_id" => $value["barang_id"],
+                        "pembelian_id" => $pembelian->id_pembelian,
+                        "qty" => $value["qty"],
+                    ];
+                    $detailPembelian = DetailPembelian::create($dataDetailPembelian);
+                }                
+            } catch (QueryException $e) {
+                return new ApiResource(false, $e->getMessage(), []);
+            }
+
+            try {
+                $dataLaporan = [
+                    "kode_laporan" => Laporan::latest()->first() ?  "LB-IN-" . preg_replace('/[^0-9]/','',Laporan::latest()->first()->kode_laporan) + 1  : 'LB-IN-1',
+                    "tgl_laporan" => $tgl_sekarang,
+                    "waktu" => $waktu_sekarang,
+                    "credit" => $request->jml_bayar_pembelian,
+                    "debit" => 0,
+                    "saldo" => Laporan::latest()->first() ? Laporan::latest()->first()->saldo + $request->jml_bayar_pembelian : $request->jml_bayar_pembelian,
+                ];
+                $laporan = Laporan::create($dataLaporan);
+            } catch (QueryException $e) {
+                return new ApiResource(false, $e->getMessage(), []);
+            }
+
+            $respons = [
+                'jml_kembalian_pembelian' => $request->jml_kembalian_pembelian, 
+                'pembelian' => $pembelian, 
+                'detail_pembelian' => $detailPembelian,
+                'laporan' => $laporan,
+            ];
+
+            return new ApiResource(true, 'Data Berhasil Disimpan', $respons);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
         }
@@ -57,20 +101,7 @@ class PembelianController extends Controller
      */
     public function update(Request $request, Pembelian $pembelian)
     {
-        try {
-            $validateData = $request->validate([
-                'tanggal_pembelian' => 'required',
-                'total_harga_beli' => 'required',
-                'total_harga_jual' => 'required',
-            ], [
-                'required' =>  ':attribute tidak boleh kosong!',
-            ]);
-
-            $pembelian = $pembelian->update($validateData);
-            return new ApiResource(true, 'Data Berhasil Disimpan', $pembelian);
-        } catch (QueryException $e) {
-            return new ApiResource(false, $e->getMessage(), []);
-        }
+        // 
     }
 
     /**

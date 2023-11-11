@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('pembelian', function (Blueprint $table) {
             $table->bigIncrements("id_pembelian");
+            $table->foreignId("suplier_id")->constrained("suplier", "id_suplier")->onUpdate("cascade")->onDelete("no action")->nullable();
             $table->date("tanggal_pembelian");
-            $table->integer("total_harga_beli");
-            $table->integer("total_harga_jual");
+            $table->integer("total_pembelian");
+            $table->integer("jml_bayar_pembelian");
+            $table->integer("jml_kembalian_pembelian");
             $table->timestamps();
         });
     }

@@ -12,4 +12,15 @@ class Pembelian extends Model
     protected $table = 'pembelian';
     protected $primaryKey = 'id_pembelian';
     protected $guarded = ['id_pembelian'];
+
+    public function suplier()
+    {
+        return $this->belongsTo(Suplier::class, 'suplier_id', 'id_suplier');
+    }
+
+    public function detail_pembelian()
+    {
+        return $this->hasMany(DetailPembelian::class, 'pembelian_id', 'id_pembelian');
+    }
+
 }

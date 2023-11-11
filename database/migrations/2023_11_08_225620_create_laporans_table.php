@@ -12,7 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('laporan', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id_laporan');
+            $table->string("kode_laporan")->unique();
+            $table->date('tgl_laporan');
+            $table->time('waktu');
+            $table->integer('credit');
+            $table->integer('debit');
+            $table->integer('saldo');
             $table->timestamps();
         });
     }

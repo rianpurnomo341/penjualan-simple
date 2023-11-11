@@ -31,7 +31,7 @@ class BarangController extends Controller
         try {
             $validateData = $request->validate([
                 "display" => 'required',
-                "kode_barang" => 'required',
+                "kode_barang" => 'required|unique:barang',
                 "nama_barang" => 'required',
                 "kategori_id" => 'required',
                 "satuan_id" => 'required',
