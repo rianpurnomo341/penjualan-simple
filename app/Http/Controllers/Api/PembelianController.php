@@ -33,7 +33,7 @@ class PembelianController extends Controller
     {
         $waktu_sekarang = Carbon::now()->format('H:i:s');
         $tgl_sekarang = Carbon::now()->format('Y-m-d');
-        
+
         try {
             $validateDataPenjualan = $request->validate([
 
@@ -55,7 +55,7 @@ class PembelianController extends Controller
                         "pembelian_id" => $pembelian->id_pembelian,
                         "qty" => $value["qty"],
                     ];
-                    $detailPembelian = DetailPembelian::create($dataDetailPembelian);
+                    DetailPembelian::create($dataDetailPembelian);
                 }                
             } catch (QueryException $e) {
                 return new ApiResource(false, $e->getMessage(), []);
@@ -70,16 +70,16 @@ class PembelianController extends Controller
                     "debit" => 0,
                     "saldo" => Laporan::latest()->first() ? Laporan::latest()->first()->saldo + $request->jml_bayar_pembelian : $request->jml_bayar_pembelian,
                 ];
-                $laporan = Laporan::create($dataLaporan);
+                Laporan::create($dataLaporan);
             } catch (QueryException $e) {
                 return new ApiResource(false, $e->getMessage(), []);
             }
 
             $respons = [
                 'jml_kembalian_pembelian' => $request->jml_kembalian_pembelian, 
-                'pembelian' => $pembelian, 
-                'detail_pembelian' => $detailPembelian,
-                'laporan' => $laporan,
+                'pembelian' => true, 
+                'detail_pembelian' => true,
+                'laporan' => true,
             ];
 
             return new ApiResource(true, 'Data Berhasil Disimpan', $respons);
