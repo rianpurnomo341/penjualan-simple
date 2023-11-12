@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('laporan', function (Blueprint $table) {
             $table->bigIncrements('id_laporan');
             $table->string("kode_laporan")->unique();
+            $table->string("nama_operasi");
             $table->date('tgl_laporan');
             $table->time('waktu');
             $table->integer('credit');

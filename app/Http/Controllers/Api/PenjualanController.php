@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\DetailPembelian;
+use App\Models\Penjualan;
 use Illuminate\Http\Request;
 
-class DetailPembelianController extends Controller
+class PenjualanController extends Controller
 {
     public function index()
     {
@@ -18,17 +18,17 @@ class DetailPembelianController extends Controller
         //
     }
 
-    public function show(DetailPembelian $detailPembelian)
+    public function show(Penjualan $penjualan)
     {
         //
     }
 
-    public function update(Request $request, DetailPembelian $detailPembelian)
+    public function update(Request $request, Penjualan $penjualan)
     {
         //
     }
 
-    public function destroy(DetailPembelian $detailPembelian)
+    public function destroy(Penjualan $penjualan)
     {
         //
     }

@@ -13,9 +13,6 @@ use Illuminate\Http\Request;
 
 class PembelianController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         try {
@@ -26,9 +23,6 @@ class PembelianController extends Controller
         }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $waktu_sekarang = Carbon::now()->format('H:i:s');
@@ -36,7 +30,6 @@ class PembelianController extends Controller
 
         try {
             $validateDataPenjualan = $request->validate([
-
                 "suplier_id" => 'required',
                 "total_pembelian" => 'required',
                 "jml_bayar_pembelian" => 'required',
@@ -47,39 +40,15 @@ class PembelianController extends Controller
 
             $validateDataPenjualan["tanggal_pembelian"] = $tgl_sekarang;            
             $pembelian = Pembelian::create($validateDataPenjualan);
-            
-            try {
-                foreach ($request->item as $key => $value) {
-                    $dataDetailPembelian = [
-                        "barang_id" => $value["barang_id"],
-                        "pembelian_id" => $pembelian->id_pembelian,
-                        "qty" => $value["qty"],
-                    ];
-                    DetailPembelian::create($dataDetailPembelian);
-                }                
-            } catch (QueryException $e) {
-                return new ApiResource(false, $e->getMessage(), []);
-            }
-
-            try {
-                $dataLaporan = [
-                    "kode_laporan" => Laporan::latest()->first() ?  "LB-IN-" . preg_replace('/[^0-9]/','',Laporan::latest()->first()->kode_laporan) + 1  : 'LB-IN-1',
-                    "tgl_laporan" => $tgl_sekarang,
-                    "waktu" => $waktu_sekarang,
-                    "credit" => $request->jml_bayar_pembelian,
-                    "debit" => 0,
-                    "saldo" => Laporan::latest()->first() ? Laporan::latest()->first()->saldo + $request->jml_bayar_pembelian : $request->jml_bayar_pembelian,
-                ];
-                Laporan::create($dataLaporan);
-            } catch (QueryException $e) {
-                return new ApiResource(false, $e->getMessage(), []);
-            }
+                    
+            $detailPenjualan = $this->storeDetailPembelian($request, $pembelian->id_pembelian);            
+            $laporan = $this->storeLaporan($request, $waktu_sekarang, $tgl_sekarang);            
 
             $respons = [
                 'jml_kembalian_pembelian' => $request->jml_kembalian_pembelian, 
-                'pembelian' => true, 
-                'detail_pembelian' => true,
-                'laporan' => true,
+                'pembelian' => $pembelian == true ? true : false, 
+                'detail_pembelian' => $detailPenjualan,
+                'laporan' => $laporan,
             ];
 
             return new ApiResource(true, 'Data Berhasil Disimpan', $respons);
@@ -88,25 +57,6 @@ class PembelianController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Pembelian $pembelian)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Pembelian $pembelian)
-    {
-        // 
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Pembelian $pembelian)
     {
         try {
@@ -115,5 +65,42 @@ class PembelianController extends Controller
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
         }
+    }
+
+    public function storeDetailPembelian(Request $request, $id_pembelian)
+    {
+        try {
+            foreach ($request->item as $key => $value) {
+                $dataDetailPembelian = [
+                    "barang_id" => $value["barang_id"],
+                    "pembelian_id" => $id_pembelian,
+                    "qty" => $value["qty"],
+                ];
+                DetailPembelian::create($dataDetailPembelian);
+            }
+            return true;        
+        } catch (QueryException $e) {
+            return new ApiResource(false, $e->getMessage(), []);
+        }
+    }
+
+    public function storeLaporan(Request $request, $waktu_sekarang, $tgl_sekarang)
+    {
+        try {
+            $dataLaporan = [
+                "kode_laporan" => Laporan::latest()->first() ?  "LB-IN-" . preg_replace('/[^0-9]/','',Laporan::latest()->first()->kode_laporan) + 1  : 'LB-IN-1',
+                "nama_operasi" => 'Pembelian',
+                "tgl_laporan" => $tgl_sekarang,
+                "waktu" => $waktu_sekarang,
+                "credit" => $request->jml_bayar_pembelian,
+                "debit" => 0,
+                "saldo" => Laporan::latest()->first() ? Laporan::latest()->first()->saldo + $request->jml_bayar_pembelian : $request->jml_bayar_pembelian,
+            ];
+            $laporan = Laporan::create($dataLaporan);
+        } catch (QueryException $e) {
+            return new ApiResource(false, $e->getMessage(), []);
+        }
+
+        return $laporan == true ? true : false;
     }
 }
