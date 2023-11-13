@@ -22,11 +22,9 @@ class BarangController extends Controller
 
     public function store(Request $request)
     {
-        return Barang::latest()->first() ?  'KD-BR-' . preg_replace('/[^0-9]/','',Barang::latest()->first()->kode_barang) + 1  : 'KD-BR-1';
         try {
             $validateData = $request->validate([
                 'display' => 'required',
-                'kode_barang' => 'required|unique:barang',
                 'nama_barang' => 'required',
                 'kategori_id' => 'required',
                 'satuan_id' => 'required',
@@ -62,7 +60,6 @@ class BarangController extends Controller
         try {
             $validateData = $request->validate([
                 'display' => 'required',
-                'kode_barang' => 'required',
                 'nama_barang' => 'required',
                 'kategori_id' => 'required',
                 'satuan_id' => 'required',
