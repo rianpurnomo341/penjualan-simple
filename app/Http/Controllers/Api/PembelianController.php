@@ -30,19 +30,19 @@ class PembelianController extends Controller
 
         try {
             $validateDataPembelian = $request->validate([
-                "suplier_id" => 'required',
-                "total_pembelian" => 'required',
-                "jml_bayar_pembelian" => 'required',
-                "jml_kembalian_pembelian" => 'required',
+                'suplier_id' => 'required',
+                'total_pembelian' => 'required',
+                'jml_bayar_pembelian' => 'required',
+                'jml_kembalian_pembelian' => 'required',
             ], [
                 'required' =>  ':attribute tidak boleh kosong!',
             ]);
 
-            $validateDataPembelian["tanggal_pembelian"] = $tgl_sekarang;            
+            $validateDataPembelian['tanggal_pembelian'] = $tgl_sekarang;            
             $pembelian = Pembelian::create($validateDataPembelian);
                     
             $detailPenjualan = $this->storeDetailPembelian($request, $pembelian->id_pembelian);            
-            $laporan = $this->storeLaporan($request, $waktu_sekarang, $tgl_sekarang);            
+            $laporan = $this->storeLaporan($request, $pembelian->id_pembelian, $waktu_sekarang, $tgl_sekarang);            
 
             $respons = [
                 'jml_kembalian_pembelian' => $request->jml_kembalian_pembelian, 
@@ -72,9 +72,9 @@ class PembelianController extends Controller
         try {
             foreach ($request->item as $key => $value) {
                 $dataDetailPembelian = [
-                    "barang_id" => $value["barang_id"],
-                    "pembelian_id" => $id_pembelian,
-                    "qty" => $value["qty"],
+                    'barang_id' => $value['barang_id'],
+                    'pembelian_id' => $id_pembelian,
+                    'qty' => $value['qty'],
                 ];
                 DetailPembelian::create($dataDetailPembelian);
             }
@@ -84,17 +84,19 @@ class PembelianController extends Controller
         }
     }
 
-    public function storeLaporan(Request $request, $waktu_sekarang, $tgl_sekarang)
+    public function storeLaporan(Request $request, $id_pembelian, $waktu_sekarang, $tgl_sekarang)
     {
         try {
             $dataLaporan = [
-                "kode_laporan" => Laporan::latest()->first() ?  "LB-IN-" . preg_replace('/[^0-9]/','',Laporan::latest()->first()->kode_laporan) + 1  : 'LB-IN-1',
-                "nama_operasi" => 'Pembelian',
-                "tgl_laporan" => $tgl_sekarang,
-                "waktu" => $waktu_sekarang,
-                "credit" => $request->jml_bayar_pembelian,
-                "debit" => 0,
-                "saldo" => Laporan::latest()->first() ? Laporan::latest()->first()->saldo + $request->jml_bayar_pembelian : $request->jml_bayar_pembelian,
+                'pembelian_id' => $id_pembelian,
+                'penjualan_id' => null,
+                'kode_laporan' => Laporan::latest()->first() ?  'LB-IN-' . preg_replace('/[^0-9]/','',Laporan::latest()->first()->kode_laporan) + 1  : 'LB-IN-1',
+                'nama_operasi' => 'Pembelian',
+                'tgl_laporan' => $tgl_sekarang,
+                'waktu' => $waktu_sekarang,
+                'credit' => $request->jml_bayar_pembelian,
+                'debit' => 0,
+                'saldo' => Laporan::latest()->first() ? Laporan::latest()->first()->saldo + $request->jml_bayar_pembelian : $request->jml_bayar_pembelian,
             ];
             $laporan = Laporan::create($dataLaporan);
         } catch (QueryException $e) {

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer("total_penjualan");
             $table->integer("jml_bayar_penjualan");
             $table->integer("jml_kembalian_penjualan");
+            $table->timestamps();
         });
     }
 
