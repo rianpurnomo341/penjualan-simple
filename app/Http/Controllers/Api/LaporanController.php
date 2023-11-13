@@ -19,4 +19,6 @@ class LaporanController extends Controller
             return new ApiResource(false, $e->getMessage(), []);
         }
     }
+
+    
 }

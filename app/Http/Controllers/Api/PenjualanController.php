@@ -43,14 +43,14 @@ class PenjualanController extends Controller
             $detailPenjualan = $this->storeDetailpenjualan($request, $penjualan->id_penjualan);
             $laporan = $this->storeLaporan($request, $penjualan->id_penjualan, $waktu_sekarang, $tgl_sekarang);            
 
-            $respons = [
+            $response = [
                 'jml_kembalian_penjualan' => $request->jml_kembalian_penjualan, 
                 'penjualan' => $penjualan == true ? true : false, 
                 'detail_penjualan' => $detailPenjualan,
                 'laporan' => $laporan,
             ];
 
-            return new ApiResource(true, 'Data Berhasil Disimpan', $respons);
+            return new ApiResource(true, 'Data Berhasil Disimpan', $response);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
         }

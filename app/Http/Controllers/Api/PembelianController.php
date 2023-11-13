@@ -44,14 +44,14 @@ class PembelianController extends Controller
             $detailPenjualan = $this->storeDetailPembelian($request, $pembelian->id_pembelian);            
             $laporan = $this->storeLaporan($request, $pembelian->id_pembelian, $waktu_sekarang, $tgl_sekarang);            
 
-            $respons = [
+            $response = [
                 'jml_kembalian_pembelian' => $request->jml_kembalian_pembelian, 
                 'pembelian' => $pembelian == true ? true : false, 
                 'detail_pembelian' => $detailPenjualan,
                 'laporan' => $laporan,
             ];
 
-            return new ApiResource(true, 'Data Berhasil Disimpan', $respons);
+            return new ApiResource(true, 'Data Berhasil Disimpan', $response);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
         }

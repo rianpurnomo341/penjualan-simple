@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BarangController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\KategoriController;
 use App\Http\Controllers\Api\LaporanController;
 use App\Http\Controllers\Api\PembelianController;
@@ -26,6 +27,7 @@ Route::post('/admin/loginAuthenticate', [AuthController::class, 'loginAuthentica
 Route::get('/admin/logout', [AuthController::class, 'logout']);
 
 // Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
+    Route::apiResource('/admin//dashboard', DashboardController::class);
     Route::apiResource('/admin/kategori', KategoriController::class);
     Route::apiResource('/admin/satuan', SatuanController::class);
     Route::apiResource('/admin/suplier', SuplierController::class);
