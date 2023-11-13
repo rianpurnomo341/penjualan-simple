@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 05 Nov 2023 pada 15.37
+-- Waktu pembuatan: 13 Nov 2023 pada 13.36
 -- Versi server: 10.4.11-MariaDB
 -- Versi PHP: 7.4.1
 
@@ -25,6 +25,74 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `barang`
+--
+
+CREATE TABLE `barang` (
+  `id_barang` bigint(20) UNSIGNED NOT NULL,
+  `display` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `kode_barang` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_barang` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kategori_id` bigint(20) UNSIGNED NOT NULL,
+  `satuan_id` bigint(20) UNSIGNED NOT NULL,
+  `diskon` int(11) DEFAULT NULL,
+  `harga_before_diskon` int(11) NOT NULL,
+  `harga_after_diskon` int(11) NOT NULL,
+  `tgl_kadaluarsa` date NOT NULL,
+  `deskripsi` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `barang`
+--
+
+INSERT INTO `barang` (`id_barang`, `display`, `kode_barang`, `nama_barang`, `kategori_id`, `satuan_id`, `diskon`, `harga_before_diskon`, `harga_after_diskon`, `tgl_kadaluarsa`, `deskripsi`, `created_at`, `updated_at`) VALUES
+(1, 'display1', 'KD002', 'Kopi', 1, 1, 10, 1000, 2000, '2023-02-02', 'deskripsi1', '2023-11-12 01:02:21', '2023-11-12 01:02:21');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `detail_pembelian`
+--
+
+CREATE TABLE `detail_pembelian` (
+  `id_detail_pembelian` bigint(20) UNSIGNED NOT NULL,
+  `barang_id` bigint(20) UNSIGNED NOT NULL,
+  `pembelian_id` bigint(20) UNSIGNED NOT NULL,
+  `qty` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `detail_pembelian`
+--
+
+INSERT INTO `detail_pembelian` (`id_detail_pembelian`, `barang_id`, `pembelian_id`, `qty`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, 10, '2023-11-12 01:02:29', '2023-11-12 01:02:29'),
+(2, 1, 1, 20, '2023-11-12 01:02:29', '2023-11-12 01:02:29'),
+(3, 1, 1, 30, '2023-11-12 01:02:29', '2023-11-12 01:02:29');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `detail_penjualan`
+--
+
+CREATE TABLE `detail_penjualan` (
+  `id_detail_penjualan` bigint(20) UNSIGNED NOT NULL,
+  `barang_id` bigint(20) UNSIGNED NOT NULL,
+  `penjualan_id` bigint(20) UNSIGNED NOT NULL,
+  `qty` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `failed_jobs`
 --
 
@@ -37,6 +105,53 @@ CREATE TABLE `failed_jobs` (
   `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `failed_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `kategori`
+--
+
+CREATE TABLE `kategori` (
+  `id_kategori` bigint(20) UNSIGNED NOT NULL,
+  `nama_kategori` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ket_kategori` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `kategori`
+--
+
+INSERT INTO `kategori` (`id_kategori`, `nama_kategori`, `ket_kategori`, `created_at`, `updated_at`) VALUES
+(1, 'kategori 3', 'keterangan 3', '2023-11-12 01:01:55', '2023-11-12 01:01:55');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `laporan`
+--
+
+CREATE TABLE `laporan` (
+  `id_laporan` bigint(20) UNSIGNED NOT NULL,
+  `kode_laporan` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_operasi` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tgl_laporan` date NOT NULL,
+  `waktu` time NOT NULL,
+  `credit` int(11) NOT NULL,
+  `debit` int(11) NOT NULL,
+  `saldo` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `laporan`
+--
+
+INSERT INTO `laporan` (`id_laporan`, `kode_laporan`, `nama_operasi`, `tgl_laporan`, `waktu`, `credit`, `debit`, `saldo`, `created_at`, `updated_at`) VALUES
+(1, 'LB-IN-1', 'Pembelian', '2023-11-12', '08:02:28', 400, 0, 400, '2023-11-12 01:02:29', '2023-11-12 01:02:29');
 
 -- --------------------------------------------------------
 
@@ -64,8 +179,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (7, '2023_10_02_222604_create_supliers_table', 1),
 (8, '2023_10_02_222613_create_pembelian_table', 1),
 (9, '2023_10_02_222614_create_barangs_table', 1),
-(10, '2023_10_02_222622_create_transaksis_table', 1),
-(11, '2023_10_02_222630_create_transaksi_details_table', 1);
+(10, '2023_11_08_225600_create_detail_pembelians_table', 1),
+(11, '2023_11_08_225620_create_laporans_table', 1),
+(12, '2023_11_12_074006_create_penjualans_table', 1),
+(13, '2023_11_12_074744_create_detail_penjualans_table', 1);
 
 -- --------------------------------------------------------
 
@@ -77,6 +194,44 @@ CREATE TABLE `password_reset_tokens` (
   `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `pembelian`
+--
+
+CREATE TABLE `pembelian` (
+  `id_pembelian` bigint(20) UNSIGNED NOT NULL,
+  `suplier_id` bigint(20) UNSIGNED NOT NULL,
+  `tanggal_pembelian` date NOT NULL,
+  `total_pembelian` int(11) NOT NULL,
+  `jml_bayar_pembelian` int(11) NOT NULL,
+  `jml_kembalian_pembelian` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data untuk tabel `pembelian`
+--
+
+INSERT INTO `pembelian` (`id_pembelian`, `suplier_id`, `tanggal_pembelian`, `total_pembelian`, `jml_bayar_pembelian`, `jml_kembalian_pembelian`, `created_at`, `updated_at`) VALUES
+(1, 1, '2023-11-12', 300, 400, 100, '2023-11-12 01:02:29', '2023-11-12 01:02:29');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `penjualan`
+--
+
+CREATE TABLE `penjualan` (
+  `id_penjualan` bigint(20) UNSIGNED NOT NULL,
+  `tanggal_penjualan` date NOT NULL,
+  `total_penjualan` int(11) NOT NULL,
+  `jml_bayar_penjualan` int(11) NOT NULL,
+  `jml_kembalian_penjualan` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -101,171 +256,47 @@ CREATE TABLE `personal_access_tokens` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tb_barang`
+-- Struktur dari tabel `satuan`
 --
 
-CREATE TABLE `tb_barang` (
-  `id_barang` bigint(20) UNSIGNED NOT NULL,
-  `id_pembelian` bigint(20) UNSIGNED DEFAULT NULL,
-  `kode_barang` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `display` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `nama` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `id_kategori` bigint(20) UNSIGNED DEFAULT NULL,
-  `id_satuan` bigint(20) UNSIGNED DEFAULT NULL,
-  `diskon` int(11) NOT NULL,
-  `harga` int(11) NOT NULL,
-  `promo` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `deskripsi` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `kadaluarsa` date NOT NULL,
-  `id_suplier` bigint(20) UNSIGNED DEFAULT NULL,
-  `total_pembelian_unit` int(11) NOT NULL,
-  `total_pembelian_rp` int(11) NOT NULL,
-  `total_penjualan_unit` int(11) NOT NULL,
-  `total_penjualan_rp` int(11) NOT NULL,
-  `provit` int(11) NOT NULL,
-  `keterangan` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data untuk tabel `tb_barang`
---
-
-INSERT INTO `tb_barang` (`id_barang`, `id_pembelian`, `kode_barang`, `display`, `nama`, `id_kategori`, `id_satuan`, `diskon`, `harga`, `promo`, `deskripsi`, `kadaluarsa`, `id_suplier`, `total_pembelian_unit`, `total_pembelian_rp`, `total_penjualan_unit`, `total_penjualan_rp`, `provit`, `keterangan`, `created_at`, `updated_at`) VALUES
-(1, NULL, '1', 'display', 'nama', 1, 1, 1, 1, '1', '1', '2022-02-02', 1, 1, 1, 12, 1, 1, '1', '2023-11-02 13:11:55', '2023-11-02 13:11:55'),
-(2, 1, '1', 'display', 'nama', 1, 1, 1, 1, '1', '1', '2022-02-02', 1, 1, 1, 12, 1, 1, '1', '2023-11-02 13:12:27', '2023-11-02 13:12:27');
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `tb_kategori`
---
-
-CREATE TABLE `tb_kategori` (
-  `id_kategori` bigint(20) UNSIGNED NOT NULL,
-  `kategori` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `keterangan` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data untuk tabel `tb_kategori`
---
-
-INSERT INTO `tb_kategori` (`id_kategori`, `kategori`, `keterangan`, `created_at`, `updated_at`) VALUES
-(1, 'kategori 1', 'keterangan', '2023-11-02 13:00:05', '2023-11-02 13:00:05');
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `tb_pembelian`
---
-
-CREATE TABLE `tb_pembelian` (
-  `id_pembelian` bigint(20) UNSIGNED NOT NULL,
-  `tanggal_pembelian` date NOT NULL,
-  `total_harga_beli` int(11) NOT NULL,
-  `total_harga_jual` int(11) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data untuk tabel `tb_pembelian`
---
-
-INSERT INTO `tb_pembelian` (`id_pembelian`, `tanggal_pembelian`, `total_harga_beli`, `total_harga_jual`, `created_at`, `updated_at`) VALUES
-(1, '2023-02-02', 500, 10000, '2023-10-05 04:10:23', '2023-10-05 05:36:41');
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `tb_satuan`
---
-
-CREATE TABLE `tb_satuan` (
+CREATE TABLE `satuan` (
   `id_satuan` bigint(20) UNSIGNED NOT NULL,
-  `satuan` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `keterangan` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_satuan` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ket_satuan` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data untuk tabel `tb_satuan`
+-- Dumping data untuk tabel `satuan`
 --
 
-INSERT INTO `tb_satuan` (`id_satuan`, `satuan`, `keterangan`, `created_at`, `updated_at`) VALUES
-(1, 'satuan 2', 'keterangan 2', '2023-11-02 12:59:57', '2023-11-02 12:59:57');
+INSERT INTO `satuan` (`id_satuan`, `nama_satuan`, `ket_satuan`, `created_at`, `updated_at`) VALUES
+(1, 'satuan 1', 'keterangan 1', '2023-11-12 01:02:06', '2023-11-12 01:02:06');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tb_suplier`
+-- Struktur dari tabel `suplier`
 --
 
-CREATE TABLE `tb_suplier` (
+CREATE TABLE `suplier` (
   `id_suplier` bigint(20) UNSIGNED NOT NULL,
-  `nama` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `alamat` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `no_tlp` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `keterangan` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `kode_suplier` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nama_suplier` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `no_tlp` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `alamat` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ket_suplier` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data untuk tabel `tb_suplier`
+-- Dumping data untuk tabel `suplier`
 --
 
-INSERT INTO `tb_suplier` (`id_suplier`, `nama`, `alamat`, `no_tlp`, `keterangan`, `created_at`, `updated_at`) VALUES
-(1, 'nama suplier', 'alamat suplier', 'no tlp suplier', 'keterangan suplier', '2023-11-02 12:59:44', '2023-11-02 12:59:44');
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `tb_transaksi`
---
-
-CREATE TABLE `tb_transaksi` (
-  `id_transaksi` bigint(20) UNSIGNED NOT NULL,
-  `tgl_transaksi` date NOT NULL,
-  `total_harga_jual` int(11) NOT NULL,
-  `total_harga_beli` int(11) NOT NULL,
-  `provit` int(11) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data untuk tabel `tb_transaksi`
---
-
-INSERT INTO `tb_transaksi` (`id_transaksi`, `tgl_transaksi`, `total_harga_jual`, `total_harga_beli`, `provit`, `created_at`, `updated_at`) VALUES
-(1, '2023-02-10', 500, 10000, 90, '2023-10-05 18:40:17', '2023-10-05 18:41:34');
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `tb_transaksi_detail`
---
-
-CREATE TABLE `tb_transaksi_detail` (
-  `id_transaksi_detail` bigint(20) UNSIGNED NOT NULL,
-  `id_transaksi` bigint(20) UNSIGNED DEFAULT NULL,
-  `id_barang` bigint(20) UNSIGNED DEFAULT NULL,
-  `kode_barang` int(11) NOT NULL,
-  `nama_barang` int(11) NOT NULL,
-  `satuan` int(11) NOT NULL,
-  `qty` int(11) NOT NULL,
-  `diskon` int(11) NOT NULL,
-  `harga` int(11) NOT NULL,
-  `total` int(11) NOT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `suplier` (`id_suplier`, `kode_suplier`, `nama_suplier`, `no_tlp`, `alamat`, `ket_suplier`, `created_at`, `updated_at`) VALUES
+(1, 'KD01', 'nama suplier', 'no tlp suplier', 'alamat suplier', NULL, '2023-11-12 01:02:12', '2023-11-12 01:02:12');
 
 -- --------------------------------------------------------
 
@@ -276,24 +307,41 @@ CREATE TABLE `tb_transaksi_detail` (
 CREATE TABLE `users` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email_verified_at` timestamp NULL DEFAULT NULL,
+  `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'Admin',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data untuk tabel `users`
---
-
-INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(3, 'Rian Purnomo', 'rianpurnomo341@gmail.com', NULL, '$2y$10$FKrZHsDwtRAVym6YquwQ2Ob2FLjKDhFKWTn/w7La2R7sUgLVP5vbS', NULL, '2023-11-02 12:05:29', '2023-11-02 12:05:29');
-
---
 -- Indexes for dumped tables
 --
+
+--
+-- Indeks untuk tabel `barang`
+--
+ALTER TABLE `barang`
+  ADD PRIMARY KEY (`id_barang`),
+  ADD UNIQUE KEY `barang_kode_barang_unique` (`kode_barang`),
+  ADD KEY `barang_kategori_id_foreign` (`kategori_id`),
+  ADD KEY `barang_satuan_id_foreign` (`satuan_id`);
+
+--
+-- Indeks untuk tabel `detail_pembelian`
+--
+ALTER TABLE `detail_pembelian`
+  ADD PRIMARY KEY (`id_detail_pembelian`),
+  ADD KEY `detail_pembelian_barang_id_foreign` (`barang_id`),
+  ADD KEY `detail_pembelian_pembelian_id_foreign` (`pembelian_id`);
+
+--
+-- Indeks untuk tabel `detail_penjualan`
+--
+ALTER TABLE `detail_penjualan`
+  ADD PRIMARY KEY (`id_detail_penjualan`),
+  ADD KEY `detail_penjualan_barang_id_foreign` (`barang_id`),
+  ADD KEY `detail_penjualan_penjualan_id_foreign` (`penjualan_id`);
 
 --
 -- Indeks untuk tabel `failed_jobs`
@@ -301,6 +349,19 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `re
 ALTER TABLE `failed_jobs`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`);
+
+--
+-- Indeks untuk tabel `kategori`
+--
+ALTER TABLE `kategori`
+  ADD PRIMARY KEY (`id_kategori`);
+
+--
+-- Indeks untuk tabel `laporan`
+--
+ALTER TABLE `laporan`
+  ADD PRIMARY KEY (`id_laporan`),
+  ADD UNIQUE KEY `laporan_kode_laporan_unique` (`kode_laporan`);
 
 --
 -- Indeks untuk tabel `migrations`
@@ -315,6 +376,19 @@ ALTER TABLE `password_reset_tokens`
   ADD PRIMARY KEY (`email`);
 
 --
+-- Indeks untuk tabel `pembelian`
+--
+ALTER TABLE `pembelian`
+  ADD PRIMARY KEY (`id_pembelian`),
+  ADD KEY `pembelian_suplier_id_foreign` (`suplier_id`);
+
+--
+-- Indeks untuk tabel `penjualan`
+--
+ALTER TABLE `penjualan`
+  ADD PRIMARY KEY (`id_penjualan`);
+
+--
 -- Indeks untuk tabel `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
@@ -323,63 +397,46 @@ ALTER TABLE `personal_access_tokens`
   ADD KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`);
 
 --
--- Indeks untuk tabel `tb_barang`
+-- Indeks untuk tabel `satuan`
 --
-ALTER TABLE `tb_barang`
-  ADD PRIMARY KEY (`id_barang`),
-  ADD KEY `tb_barang_id_pembelian_foreign` (`id_pembelian`),
-  ADD KEY `tb_barang_id_kategori_foreign` (`id_kategori`),
-  ADD KEY `tb_barang_id_satuan_foreign` (`id_satuan`),
-  ADD KEY `tb_barang_id_suplier_foreign` (`id_suplier`);
-
---
--- Indeks untuk tabel `tb_kategori`
---
-ALTER TABLE `tb_kategori`
-  ADD PRIMARY KEY (`id_kategori`);
-
---
--- Indeks untuk tabel `tb_pembelian`
---
-ALTER TABLE `tb_pembelian`
-  ADD PRIMARY KEY (`id_pembelian`);
-
---
--- Indeks untuk tabel `tb_satuan`
---
-ALTER TABLE `tb_satuan`
+ALTER TABLE `satuan`
   ADD PRIMARY KEY (`id_satuan`);
 
 --
--- Indeks untuk tabel `tb_suplier`
+-- Indeks untuk tabel `suplier`
 --
-ALTER TABLE `tb_suplier`
-  ADD PRIMARY KEY (`id_suplier`);
-
---
--- Indeks untuk tabel `tb_transaksi`
---
-ALTER TABLE `tb_transaksi`
-  ADD PRIMARY KEY (`id_transaksi`);
-
---
--- Indeks untuk tabel `tb_transaksi_detail`
---
-ALTER TABLE `tb_transaksi_detail`
-  ADD PRIMARY KEY (`id_transaksi_detail`),
-  ADD KEY `tb_transaksi_detail_id_transaksi_foreign` (`id_transaksi`),
-  ADD KEY `tb_transaksi_detail_id_barang_foreign` (`id_barang`);
+ALTER TABLE `suplier`
+  ADD PRIMARY KEY (`id_suplier`),
+  ADD UNIQUE KEY `suplier_kode_suplier_unique` (`kode_suplier`);
 
 --
 -- Indeks untuk tabel `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `users_email_unique` (`email`);
+  ADD UNIQUE KEY `users_username_unique` (`username`);
 
 --
 -- AUTO_INCREMENT untuk tabel yang dibuang
 --
+
+--
+-- AUTO_INCREMENT untuk tabel `barang`
+--
+ALTER TABLE `barang`
+  MODIFY `id_barang` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT untuk tabel `detail_pembelian`
+--
+ALTER TABLE `detail_pembelian`
+  MODIFY `id_detail_pembelian` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT untuk tabel `detail_penjualan`
+--
+ALTER TABLE `detail_penjualan`
+  MODIFY `id_detail_penjualan` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `failed_jobs`
@@ -388,10 +445,34 @@ ALTER TABLE `failed_jobs`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT untuk tabel `kategori`
+--
+ALTER TABLE `kategori`
+  MODIFY `id_kategori` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT untuk tabel `laporan`
+--
+ALTER TABLE `laporan`
+  MODIFY `id_laporan` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT untuk tabel `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT untuk tabel `pembelian`
+--
+ALTER TABLE `pembelian`
+  MODIFY `id_pembelian` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT untuk tabel `penjualan`
+--
+ALTER TABLE `penjualan`
+  MODIFY `id_penjualan` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `personal_access_tokens`
@@ -400,72 +481,53 @@ ALTER TABLE `personal_access_tokens`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `tb_barang`
+-- AUTO_INCREMENT untuk tabel `satuan`
 --
-ALTER TABLE `tb_barang`
-  MODIFY `id_barang` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT untuk tabel `tb_kategori`
---
-ALTER TABLE `tb_kategori`
-  MODIFY `id_kategori` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT untuk tabel `tb_pembelian`
---
-ALTER TABLE `tb_pembelian`
-  MODIFY `id_pembelian` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT untuk tabel `tb_satuan`
---
-ALTER TABLE `tb_satuan`
+ALTER TABLE `satuan`
   MODIFY `id_satuan` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT untuk tabel `tb_suplier`
+-- AUTO_INCREMENT untuk tabel `suplier`
 --
-ALTER TABLE `tb_suplier`
+ALTER TABLE `suplier`
   MODIFY `id_suplier` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT untuk tabel `tb_transaksi`
---
-ALTER TABLE `tb_transaksi`
-  MODIFY `id_transaksi` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT untuk tabel `tb_transaksi_detail`
---
-ALTER TABLE `tb_transaksi_detail`
-  MODIFY `id_transaksi_detail` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
 --
 
 --
--- Ketidakleluasaan untuk tabel `tb_barang`
+-- Ketidakleluasaan untuk tabel `barang`
 --
-ALTER TABLE `tb_barang`
-  ADD CONSTRAINT `tb_barang_id_kategori_foreign` FOREIGN KEY (`id_kategori`) REFERENCES `tb_kategori` (`id_kategori`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `tb_barang_id_pembelian_foreign` FOREIGN KEY (`id_pembelian`) REFERENCES `tb_pembelian` (`id_pembelian`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `tb_barang_id_satuan_foreign` FOREIGN KEY (`id_satuan`) REFERENCES `tb_satuan` (`id_satuan`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `tb_barang_id_suplier_foreign` FOREIGN KEY (`id_suplier`) REFERENCES `tb_suplier` (`id_suplier`) ON DELETE NO ACTION ON UPDATE CASCADE;
+ALTER TABLE `barang`
+  ADD CONSTRAINT `barang_kategori_id_foreign` FOREIGN KEY (`kategori_id`) REFERENCES `kategori` (`id_kategori`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `barang_satuan_id_foreign` FOREIGN KEY (`satuan_id`) REFERENCES `satuan` (`id_satuan`) ON DELETE NO ACTION ON UPDATE CASCADE;
 
 --
--- Ketidakleluasaan untuk tabel `tb_transaksi_detail`
+-- Ketidakleluasaan untuk tabel `detail_pembelian`
 --
-ALTER TABLE `tb_transaksi_detail`
-  ADD CONSTRAINT `tb_transaksi_detail_id_barang_foreign` FOREIGN KEY (`id_barang`) REFERENCES `tb_barang` (`id_barang`) ON DELETE NO ACTION ON UPDATE CASCADE,
-  ADD CONSTRAINT `tb_transaksi_detail_id_transaksi_foreign` FOREIGN KEY (`id_transaksi`) REFERENCES `tb_transaksi` (`id_transaksi`) ON DELETE NO ACTION ON UPDATE CASCADE;
+ALTER TABLE `detail_pembelian`
+  ADD CONSTRAINT `detail_pembelian_barang_id_foreign` FOREIGN KEY (`barang_id`) REFERENCES `barang` (`id_barang`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `detail_pembelian_pembelian_id_foreign` FOREIGN KEY (`pembelian_id`) REFERENCES `pembelian` (`id_pembelian`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `detail_penjualan`
+--
+ALTER TABLE `detail_penjualan`
+  ADD CONSTRAINT `detail_penjualan_barang_id_foreign` FOREIGN KEY (`barang_id`) REFERENCES `barang` (`id_barang`) ON DELETE NO ACTION ON UPDATE CASCADE,
+  ADD CONSTRAINT `detail_penjualan_penjualan_id_foreign` FOREIGN KEY (`penjualan_id`) REFERENCES `penjualan` (`id_penjualan`) ON DELETE NO ACTION ON UPDATE CASCADE;
+
+--
+-- Ketidakleluasaan untuk tabel `pembelian`
+--
+ALTER TABLE `pembelian`
+  ADD CONSTRAINT `pembelian_suplier_id_foreign` FOREIGN KEY (`suplier_id`) REFERENCES `suplier` (`id_suplier`) ON DELETE NO ACTION ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

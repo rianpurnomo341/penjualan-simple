@@ -29,7 +29,7 @@ class PembelianController extends Controller
         $tgl_sekarang = Carbon::now()->format('Y-m-d');
 
         try {
-            $validateDataPenjualan = $request->validate([
+            $validateDataPembelian = $request->validate([
                 "suplier_id" => 'required',
                 "total_pembelian" => 'required',
                 "jml_bayar_pembelian" => 'required',
@@ -38,8 +38,8 @@ class PembelianController extends Controller
                 'required' =>  ':attribute tidak boleh kosong!',
             ]);
 
-            $validateDataPenjualan["tanggal_pembelian"] = $tgl_sekarang;            
-            $pembelian = Pembelian::create($validateDataPenjualan);
+            $validateDataPembelian["tanggal_pembelian"] = $tgl_sekarang;            
+            $pembelian = Pembelian::create($validateDataPembelian);
                     
             $detailPenjualan = $this->storeDetailPembelian($request, $pembelian->id_pembelian);            
             $laporan = $this->storeLaporan($request, $waktu_sekarang, $tgl_sekarang);            

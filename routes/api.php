@@ -3,12 +3,11 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BarangController;
 use App\Http\Controllers\Api\KategoriController;
+use App\Http\Controllers\Api\LaporanController;
 use App\Http\Controllers\Api\PembelianController;
+use App\Http\Controllers\Api\PenjualanController;
 use App\Http\Controllers\Api\SatuanController;
 use App\Http\Controllers\Api\SuplierController;
-use App\Http\Controllers\Api\TransaksiController;
-use App\Http\Controllers\Api\TransaksiDetailController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,6 +29,8 @@ Route::get('/admin/logout', [AuthController::class, 'logout']);
     Route::apiResource('/admin/kategori', KategoriController::class);
     Route::apiResource('/admin/satuan', SatuanController::class);
     Route::apiResource('/admin/suplier', SuplierController::class);
-    Route::apiResource('/admin/pembelian', PembelianController::class);
     Route::apiResource('/admin/barang', BarangController::class);
+    Route::apiResource('/admin/pembelian', PembelianController::class);
+    Route::apiResource('/admin/penjualan', PenjualanController::class);
+    Route::apiResource('/admin/laporan', LaporanController::class);
 // });
