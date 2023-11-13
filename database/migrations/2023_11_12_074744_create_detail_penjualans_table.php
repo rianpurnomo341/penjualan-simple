@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('detail_penjualan', function (Blueprint $table) {
             $table->bigIncrements('id_detail_penjualan');
-            $table->foreignId("barang_id")->constrained("barang", "id_barang")->onUpdate("cascade")->onDelete("no action")->nullable();
-            $table->foreignId("penjualan_id")->constrained("penjualan", "id_penjualan")->onUpdate("cascade")->onDelete("no action")->nullable();
+            $table->foreignId("barang_id")->nullable()->constrained("barang", "id_barang")->onUpdate("cascade")->onDelete("no action");
+            $table->foreignId("penjualan_id")->nullable()->constrained("penjualan", "id_penjualan")->onUpdate("cascade")->onDelete("no action");
             $table->integer('qty');
             $table->timestamps();
         });

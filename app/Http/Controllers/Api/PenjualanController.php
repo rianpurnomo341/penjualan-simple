@@ -30,14 +30,14 @@ class PenjualanController extends Controller
 
         try {
             $validateDataPenjualan = $request->validate([
-                "total_penjualan" => 'required',
-                "jml_bayar_penjualan" => 'required',
-                "jml_kembalian_penjualan" => 'required',
+                'total_penjualan' => 'required',
+                'jml_bayar_penjualan' => 'required',
+                'jml_kembalian_penjualan' => 'required',
             ], [
                 'required' =>  ':attribute tidak boleh kosong!',
             ]);
 
-            $validateDataPenjualan["tanggal_penjualan"] = $tgl_sekarang;       
+            $validateDataPenjualan['tanggal_penjualan'] = $tgl_sekarang;       
             $penjualan = Penjualan::create($validateDataPenjualan);
                    
             $detailPenjualan = $this->storeDetailpenjualan($request, $penjualan->id_penjualan);
