@@ -57,11 +57,11 @@ class PembelianController extends Controller
         }
     }
 
-    public function destroy(Pembelian $pembelian)
+    public function show(Pembelian $pembelian)
     {
         try {
-            $pembelian = $pembelian->delete();
-            return new ApiResource(true, 'Data Berhasil Dihapus', $pembelian);
+            $pembelian = Pembelian::where('id_pembelian', $pembelian->id_pembelian)->with('suplier','detail_pembelian')->get();
+            return new ApiResource(true, 'Berhasil Menampilkan Data', $pembelian);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
         }

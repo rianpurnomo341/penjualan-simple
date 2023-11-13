@@ -58,7 +58,12 @@ class PenjualanController extends Controller
 
     public function show(Penjualan $penjualan)
     {
-        //
+        try {
+            $penjualan = Penjualan::where('id_penjualan', $penjualan->id_penjualan)->with('detail_penjualan')->get();
+            return new ApiResource(true, 'Berhasil Menampilkan Data', $penjualan);
+        } catch (QueryException $e) {
+            return new ApiResource(false, $e->getMessage(), []);
+        }
     }
 
     public function storeDetailpenjualan(Request $request, $id_penjualan)
@@ -90,7 +95,7 @@ class PenjualanController extends Controller
                 'waktu' => $waktu_sekarang,
                 'credit' => 0,
                 'debit' => $request->jml_bayar_penjualan,
-                'saldo' => Laporan::latest()->first() ? Laporan::latest()->first()->saldo - $request->jml_bayar_penjualan : $request->jml_bayar_penjualan,
+                'saldo' => Laporan::latest()->first() ? Laporan::latest()->first()->saldo - $request->jml_bayar_penjualan : 0 - $request->jml_bayar_penjualan,
             ];
             $laporan = Laporan::create($dataLaporan);
         } catch (QueryException $e) {

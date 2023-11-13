@@ -12,4 +12,9 @@ class Penjualan extends Model
     protected $table = 'penjualan';
     protected $primaryKey = 'id_penjualan';
     protected $guarded = ['id_penjualan'];
+
+    public function detail_penjualan()
+    {
+        return $this->hasMany(DetailPenjualan::class, 'penjualan_id', 'id_penjualan');
+    }
 }
