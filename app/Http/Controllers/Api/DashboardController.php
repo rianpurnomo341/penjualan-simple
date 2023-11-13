@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResource;
+use App\Models\DetailPembelian;
 use App\Models\DetailPenjualan;
 use App\Models\Laporan;
 use Carbon\Carbon;
@@ -15,20 +16,22 @@ class DashboardController extends Controller
     {
         
         try {
-            // $pembelian = Laporan::sum('debit')-Laporan::sum('credit');
-            // $penjualan = Laporan::sum('debit')-Laporan::sum('credit');
-            $totalPengeluaranBulanIni = Laporan::where('nama_operasi', 'Pembelian')->whereMonth('tgl_laporan', Carbon::now()->month)->get()->sum('debit');
-            $totalPendapatanBulanIni = Laporan::whereMonth('tgl_laporan', Carbon::now()->month)->get()->sum('credit');
+            $pembelian = DetailPembelian::whereYear('created_at', Carbon::now()->format('Y'))->get();
+            $penjualan = DetailPenjualan::whereYear('created_at', Carbon::now()->format('Y'))->get();
+            $totalPengeluaranBulanIni = Laporan::where('nama_operasi', 'Pembelian')->whereMonth('tgl_laporan', Carbon::now()->month)->get()->sum('credit');
+            $totalPendapatanBulanIni = Laporan::where('nama_operasi', 'Penjualan')->whereMonth('tgl_laporan', Carbon::now()->month)->get()->sum('debit');
             $profit = Laporan::sum('debit')-Laporan::sum('credit');
             $barangTerlaris = DetailPenjualan::orderBy('qty', 'DESC')->get();
-            // $penjualanLastMont = DetailPenjualan::whereMonth('tgl_laporan', Carbon::now()->month)->get();
+            $penjualanLastWeek = DetailPenjualan::query()->whereBetween('created_at',[Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->get();
 
             $response = [
+                'pembelian' => $pembelian,
+                'penjualan' => $penjualan,
                 'totalPengeluaranBulanIni' => $totalPengeluaranBulanIni,
                 'totalPendapatanBulanIni' => $totalPendapatanBulanIni,
                 'profit' => $profit,
                 'barangTerlaris' => $barangTerlaris,
-                // 'penjualanLastMont' => $penjualanLastMont,
+                'penjualanLastWeek' => $penjualanLastWeek,
             ];
             
             return new ApiResource(true, 'Berhasil Menampilkan Data', $response);
