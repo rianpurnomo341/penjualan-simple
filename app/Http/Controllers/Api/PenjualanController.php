@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResource;
+use App\Models\Barang;
 use App\Models\DetailPenjualan;
 use App\Models\Laporan;
 use App\Models\Penjualan;
@@ -25,10 +26,27 @@ class PenjualanController extends Controller
 
     public function store(Request $request)
     {
-        $waktu_sekarang = Carbon::now()->format('H:i:s');
-        $tgl_sekarang = Carbon::now()->format('Y-m-d');
-
         try {
+            foreach ($request->item as $key => $value) {
+                foreach (Barang::all() as $key => $item)
+                {
+                    if($item->id_barang == $value['barang_id'])
+                    {
+                        if($item->qty == 0 || $item->qty < $value['qty'])
+                        {
+                            $nama_barang[] = $item->nama_barang;
+                            $nama_qty[] = $item->qty;
+                        }
+                    }
+                }
+            }
+            if(isset($nama_barang)) {
+                return new ApiResource(false, 'Qty Barang ada yang kurang!', ['nama_barang' => $nama_barang, 'qty' => $nama_qty]);
+            }
+
+            $waktu_sekarang = Carbon::now()->format('H:i:s');
+            $tgl_sekarang = Carbon::now()->format('Y-m-d');
+
             $validateDataPenjualan = $request->validate([
                 'total_penjualan' => 'required',
                 'jml_bayar_penjualan' => 'required',
@@ -74,7 +92,18 @@ class PenjualanController extends Controller
                     'barang_id' => $value['barang_id'],
                     'penjualan_id' => $id_penjualan,
                     'qty' => $value['qty'],
+                    'harga_penjualan' => $value['harga_penjualan'],
                 ];
+
+                foreach (Barang::all() as $key => $item)
+                {
+                    if($item->id_barang == $value['barang_id'])
+                    {
+                        Barang::where('id_barang', $value['barang_id'])->update([
+                            'qty' => $item->qty - $value['qty']
+                        ]);
+                    }
+                }
                 DetailPenjualan::create($dataDetailPenjualan);
             }
             return true;        

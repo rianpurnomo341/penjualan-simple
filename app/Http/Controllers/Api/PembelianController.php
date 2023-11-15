@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResource;
+use App\Models\Barang;
 use App\Models\DetailPembelian;
 use App\Models\Laporan;
 use App\Models\Pembelian;
@@ -25,10 +26,10 @@ class PembelianController extends Controller
 
     public function store(Request $request)
     {
-        $waktu_sekarang = Carbon::now()->format('H:i:s');
-        $tgl_sekarang = Carbon::now()->format('Y-m-d');
-
         try {
+            $waktu_sekarang = Carbon::now()->format('H:i:s');
+            $tgl_sekarang = Carbon::now()->format('Y-m-d');
+
             $validateDataPembelian = $request->validate([
                 'suplier_id' => 'required',
                 'total_pembelian' => 'required',
@@ -40,7 +41,7 @@ class PembelianController extends Controller
 
             $validateDataPembelian['tanggal_pembelian'] = $tgl_sekarang;            
             $pembelian = Pembelian::create($validateDataPembelian);
-                    
+
             $detailPenjualan = $this->storeDetailPembelian($request, $pembelian->id_pembelian);            
             $laporan = $this->storeLaporan($request, $pembelian->id_pembelian, $waktu_sekarang, $tgl_sekarang);            
 
@@ -69,15 +70,29 @@ class PembelianController extends Controller
 
     public function storeDetailPembelian(Request $request, $id_pembelian)
     {
-        try {
-            foreach ($request->item as $key => $value) {
+        try {            
+            foreach ($request->item as $key => $value)
+            {
                 $dataDetailPembelian = [
                     'barang_id' => $value['barang_id'],
                     'pembelian_id' => $id_pembelian,
                     'qty' => $value['qty'],
+                    'harga_pembelian' => $value['harga_pembelian'],
                 ];
+
+                foreach (Barang::all() as $key => $item)
+                {
+                    if($item->id_barang == $value['barang_id'])
+                    {
+                        Barang::where('id_barang', $value['barang_id'])->update([
+                            'qty' => $item->qty + $value['qty']
+                        ]);
+                    }
+                }
+                
                 DetailPembelian::create($dataDetailPembelian);
             }
+
             return true;        
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);

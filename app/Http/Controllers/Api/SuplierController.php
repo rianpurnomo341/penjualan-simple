@@ -24,7 +24,6 @@ class SuplierController extends Controller
     {
         try {
             $validateData = $request->validate([
-                'kode_suplier' => 'required',
                 'nama_suplier' => 'required',
                 'alamat' => 'required',
                 'no_tlp' => 'required',
@@ -33,6 +32,7 @@ class SuplierController extends Controller
                 'required' =>  ':attribute tidak boleh kosong!',
             ]);
     
+            $validateData['kode_suplier'] = Suplier::latest()->first() ?  'KD-SP-' . preg_replace('/[^0-9]/','',Suplier::latest()->first()->kode_suplier) + 1  : 'KD-SP-1';
             $suplier = Suplier::create($validateData);
             return new ApiResource(true, 'Data Berhasil Disimpan', $suplier);
         } catch (QueryException $e) {
@@ -44,7 +44,6 @@ class SuplierController extends Controller
     {
         try {
             $validateData = $request->validate([
-                'kode_suplier' => 'required',
                 'nama_suplier' => 'required',
                 'alamat' => 'required',
                 'no_tlp' => 'required',

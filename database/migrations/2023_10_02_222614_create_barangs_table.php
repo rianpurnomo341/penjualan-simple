@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string("nama_barang");
             $table->foreignId("kategori_id")->nullable()->constrained("kategori", "id_kategori")->onUpdate("cascade")->onDelete("no action");
             $table->foreignId("satuan_id")->nullable()->constrained("satuan", "id_satuan")->onUpdate("cascade")->onDelete("no action");
+            $table->integer('qty')->default(0);
             $table->integer("diskon")->nullable();
             $table->integer("harga_before_diskon");
             $table->integer("harga_after_diskon");
