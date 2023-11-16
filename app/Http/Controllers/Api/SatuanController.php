@@ -13,7 +13,7 @@ class SatuanController extends Controller
     public function index()
     {
         try {
-            $satuan = Satuan::with('barang')->withcount('barang')->get();
+            $satuan = Satuan::withcount('barang')->get();
             return new ApiResource(true, 'Berhasil Menampilkan Data', $satuan);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
