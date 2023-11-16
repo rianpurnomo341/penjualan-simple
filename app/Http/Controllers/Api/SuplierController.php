@@ -13,7 +13,7 @@ class SuplierController extends Controller
     public function index()
     {
         try {
-            $suplier = Suplier::>get();
+            $suplier = Suplier::get();
             return new ApiResource(true, 'Berhasil Menampilkan Data', $suplier);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
