@@ -13,7 +13,11 @@ class SatuanController extends Controller
     public function index()
     {
         try {
-            $satuan = Satuan::withcount('barang')->get();
+            $satuan = Satuan::withcount('barang')
+            ->select('satuan.*', DB::raw('SUM(barang.qty) as total_stock'))
+            ->leftJoin('barang', 'satuan.id_satuan', '=', 'barang.satuan_id')
+            ->groupBy('satuan.id_satuan')
+            ->get();
             return new ApiResource(true, 'Berhasil Menampilkan Data', $satuan);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
