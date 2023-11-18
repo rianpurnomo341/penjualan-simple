@@ -12,9 +12,4 @@ class Suplier extends Model
     protected $table = 'suplier';
     protected $primaryKey = 'id_suplier';
     protected $guarded = ['id_suplier'];
-
-    public function id_barang()
-    {
-        return $this->hasMany(Barang::class, 'id_suplier', 'id_suplier');
-    }
 }
