@@ -27,7 +27,7 @@ class SuplierController extends Controller
                 'nama_suplier' => 'required',
                 'alamat' => 'required',
                 'no_tlp' => 'required',
-                'keterangan' => 'required',
+                'ket_suplier' => 'required',
             ], [
                 'required' =>  ':attribute tidak boleh kosong!',
             ]);
@@ -47,7 +47,7 @@ class SuplierController extends Controller
                 'nama_suplier' => 'required',
                 'alamat' => 'required',
                 'no_tlp' => 'required',
-                'keterangan' => 'required',
+                'ket_suplier' => 'required',
             ], [
                 'required' =>  ':attribute tidak boleh kosong!',
             ]);
