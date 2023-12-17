@@ -7,13 +7,19 @@ use App\Http\Resources\ApiResource;
 use App\Models\Kategori;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class KategoriController extends Controller
 {
     public function index()
     {
         try {
-            $kategori = Kategori::withcount('barang')->with('barang.detail_pembelian')->get();
+            // $kategori = Kategori::withcount('barang')->with('barang.detail_pembelian')->get();
+            $kategori = Kategori::select('kategori.*', DB::raw('SUM(barang.qty) as total_stock'))
+            ->rightJoin('barang', 'kategori.id_kategori', '=', 'barang.kategori_id')
+            ->groupBy('kategori.id_kategori','kategori.nama_kategori','kategori.ket_kategori','kategori.created_at','kategori.updated_at')
+            ->withcount('barang as count_barang')
+            ->get();
             return new ApiResource(true, 'Berhasil Menampilkan Data', $kategori);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
