@@ -37,6 +37,12 @@ class BarangController extends Controller
                 'required' =>  ':attribute tidak boleh kosong!',
             ]);
 
+            if ($request->file('display')) {
+                if ($request->display) {
+                    $validateData['display'] = Storage::put('display', $request->file('display'));
+                }
+            }
+
             $validateData['kode_barang'] = Barang::latest()->first() ?  'KD-BR-' . preg_replace('/[^0-9]/','',Barang::latest()->first()->kode_barang) + 1  : 'KD-BR-1';
             $barang = Barang::create($validateData);
             return new ApiResource(true, 'Data Berhasil Disimpan', $barang);
