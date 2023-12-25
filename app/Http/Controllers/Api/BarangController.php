@@ -7,6 +7,7 @@ use App\Http\Resources\ApiResource;
 use App\Models\Barang;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BarangController extends Controller
 {
