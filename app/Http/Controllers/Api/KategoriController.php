@@ -16,7 +16,7 @@ class KategoriController extends Controller
         try {
             // $kategori = Kategori::withcount('barang')->with('barang.detail_pembelian')->get();
             $kategori = Kategori::select('kategori.*', DB::raw('SUM(barang.qty) as total_stock'))
-            ->rightJoin('barang', 'kategori.id_kategori', '=', 'barang.kategori_id')
+            ->leftJoin('barang', 'kategori.id_kategori', '=', 'barang.kategori_id')
             ->groupBy('kategori.id_kategori','kategori.nama_kategori','kategori.ket_kategori','kategori.created_at','kategori.updated_at')
             ->withcount('barang as count_barang')
             ->get();
