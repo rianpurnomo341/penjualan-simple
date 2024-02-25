@@ -38,7 +38,7 @@ class BarangController extends Controller
             ], [
                 'required' => ':attribute tidak boleh kosong!',
             ]);
-            echo "sampai sini 1";
+            
             // Decode the Base64-encoded image data
             $imageData = base64_decode($request->input('display.data'));
             $currentDateTime = Carbon::now()->timestamp; // Get current datetime as integer
