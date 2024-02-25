@@ -8,6 +8,7 @@ use App\Models\Barang;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class BarangController extends Controller
 {
@@ -25,7 +26,7 @@ class BarangController extends Controller
     {
         try {
             $validateData = $request->validate([
-                'display' => 'required',
+                'display' => 'array',
                 'nama_barang' => 'required',
                 'kategori_id' => 'required',
                 'satuan_id' => 'required',
@@ -35,18 +36,36 @@ class BarangController extends Controller
                 'tgl_kadaluarsa' => 'required',
                 'deskripsi' => 'required',
             ], [
-                'required' =>  ':attribute tidak boleh kosong!',
+                'required' => ':attribute tidak boleh kosong!',
             ]);
+            echo "sampai sini 1";
+            // Decode the Base64-encoded image data
+            $imageData = base64_decode($request->input('display.data'));
+            $currentDateTime = Carbon::now()->timestamp; // Get current datetime as integer
+            $imageName = $currentDateTime . '_' . $request->input('display.file_name');
+            $barangTerakhir = Barang::latest()->first();
+            $kode_barang = $barangTerakhir ? 'KD-BR-' . preg_replace('/[^0-9]/', '', $barangTerakhir->kode_barang) + 1 : 'KD-BR-1';
 
-            if ($request->file('display')) {
-                if ($request->display) {
-                    $validateData['display'] = Storage::put('display', $request->file('display'));
-                }
-            }
+            $imagePath = 'display/' . $imageName;
+            Storage::disk('public')->put($imagePath, $imageData);
 
-            $validateData['kode_barang'] = Barang::latest()->first() ?  'KD-BR-' . preg_replace('/[^0-9]/','',Barang::latest()->first()->kode_barang) + 1  : 'KD-BR-1';
-            $barang = Barang::create($validateData);
-            return new ApiResource(true, 'Data Berhasil Disimpan', $barang);
+            // Create a new Barang instance with the provided data
+            $barang = new Barang();
+            $barang->display = $imagePath;
+            $barang->kode_barang = $kode_barang;
+            $barang->nama_barang = $request->input('nama_barang');
+            $barang->kategori_id = $request->input('kategori_id');
+            $barang->satuan_id = $request->input('satuan_id');
+            $barang->diskon = $request->input('diskon');
+            $barang->harga_before_diskon = $request->input('harga_before_diskon');
+            $barang->harga_after_diskon = $request->input('harga_after_diskon');
+            $barang->tgl_kadaluarsa = $request->input('tgl_kadaluarsa');
+            $barang->deskripsi = $request->input('deskripsi');
+
+            // Save the Barang instance to the database
+            $barang->save();
+            // Return a response indicating success
+            return response()->json(['message' => 'Data Berhasil Disimpan', 'barang' => $barang], 201);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
         }
@@ -76,7 +95,7 @@ class BarangController extends Controller
                 'tgl_kadaluarsa' => 'required',
                 'deskripsi' => 'required',
             ], [
-                'required' =>  ':attribute tidak boleh kosong!',
+                'required' => ':attribute tidak boleh kosong!',
             ]);
 
             $barang = $barang->update($validateData);
