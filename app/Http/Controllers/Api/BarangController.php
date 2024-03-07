@@ -138,7 +138,8 @@ class BarangController extends Controller
             $barang->save();
 
             // Return a response indicating success
-            return response()->json(['message' => 'Data Barang berhasil diperbarui', 'barang' => $barang], 200);
+            return new ApiResource(true, 'Data Barang Berhasil Disimpan', ['barang' => $barang]);
+            // return response()->json(['message' => 'Data Barang berhasil diperbarui', 'barang' => $barang], 200);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
         }
