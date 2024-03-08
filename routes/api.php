@@ -26,6 +26,21 @@ Route::post('/admin/registerStore', [AuthController::class, 'registerStore']);
 Route::post('/admin/loginAuthenticate', [AuthController::class, 'loginAuthenticate']);
 Route::get('/admin/logout', [AuthController::class, 'logout']);
 
+Route::get('storage/{dir}/{dirdok}/{file}', function ($dir, $dirdok, $file) {
+    $path = storage_path('app'
+    . DIRECTORY_SEPARATOR . $dir
+    . DIRECTORY_SEPARATOR . $dirdok
+    . DIRECTORY_SEPARATOR . $file);
+    return response()->file($path);
+});
+
+Route::get('storage/{dir}/{file}', function ($dir, $file) {
+    $path = storage_path('app'
+    . DIRECTORY_SEPARATOR . $dir
+    . DIRECTORY_SEPARATOR . $file);
+    return response()->file($path);
+});
+
 // Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     Route::apiResource('/admin//dashboard', DashboardController::class);
     Route::apiResource('/admin/kategori', KategoriController::class);
