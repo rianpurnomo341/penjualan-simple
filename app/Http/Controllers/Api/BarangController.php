@@ -15,7 +15,7 @@ class BarangController extends Controller
     public function index()
     {
         try {
-            $barang = Barang::with('kategori', 'satuan')->get();
+            $barang = Barang::with('kategori', 'satuan')->where('deleted_at', '')->get();
             return new ApiResource(true, 'Berhasil Menampilkan Data', $barang);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
@@ -74,7 +74,9 @@ class BarangController extends Controller
     public function show(Barang $barang)
     {
         try {
-            $barang = Barang::where('id_barang', $barang->id_barang)->with('kategori', 'satuan')->get();
+            $barang = Barang::where('id_barang', $barang->id_barang)->with('kategori', 'satuan')
+                ->where('deleted_at', '')
+                ->get();
             return new ApiResource(true, 'Berhasil Menampilkan Detail Data', $barang);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
@@ -106,11 +108,12 @@ class BarangController extends Controller
             if ($request->has('display')) {
                 $displayData = $request->input('display');
 
-                if (isset($displayData['data']) && isset($displayData['file_name'])) {
+                if (isset ($displayData['data']) && isset ($displayData['file_name'])) {
                     // Decode and store the new image data
                     $imageData = base64_decode($displayData['data']);
                     $currentDateTime = Carbon::now()->timestamp; // Get current datetime as integer
-                    $imageName = $currentDateTime . '_' . $displayData['file_name'];;
+                    $imageName = $currentDateTime . '_' . $displayData['file_name'];
+                    ;
                     $imagePath = 'display/' . $imageName;
                     Storage::disk('public')->put($imagePath, $imageData);
 
@@ -148,8 +151,23 @@ class BarangController extends Controller
     public function destroy(Barang $barang)
     {
         try {
-            $barang = $barang->delete();
-            return new ApiResource(true, 'Data Berhasil Dihapus', $barang);
+            $barangId = $barang->id_barang; // Replace 1 with the actual ID of the Barang record
+
+            // Find the Barang record by ID
+            $barang = Barang::find($barangId);
+
+            if ($barang) {
+                // Update the record and set the deleted_at timestamp to the current time
+                $barang->update([
+                    'deleted_at' => Carbon::now(),
+                ]);
+
+                return new ApiResource(true, 'Data Berhasil Dihapus', $barang);
+                
+            } else {
+                // Handle case where record with the specified ID couldn't be found
+                return new ApiResource(false, 'Barang tidak ditemukan', $barang);
+            }
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
         }

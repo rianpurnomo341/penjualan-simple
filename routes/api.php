@@ -41,6 +41,10 @@ Route::get('storage/{dir}/{file}', function ($dir, $file) {
     return response()->file($path);
 });
 
+Route::get('/admin/pembelian/pagination', [PembelianController::class, 'getAllDataPembelian']);
+Route::get('/admin/penjualan/pagination', [PenjualanController::class, 'getAllDataPenjualan']);
+
+
 // Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     Route::apiResource('/admin//dashboard', DashboardController::class);
     Route::apiResource('/admin/kategori', KategoriController::class);

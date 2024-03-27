@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('penjualan', function (Blueprint $table) {
             $table->bigIncrements("id_penjualan");
+            $table->string("kode_penjualan");
             $table->date("tanggal_penjualan");
             $table->integer("total_penjualan");
             $table->integer("jml_bayar_penjualan");
