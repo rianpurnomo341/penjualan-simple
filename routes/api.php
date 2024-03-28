@@ -43,7 +43,11 @@ Route::get('storage/{dir}/{file}', function ($dir, $file) {
 
 Route::get('/admin/pembelian/pagination', [PembelianController::class, 'getAllDataPembelian']);
 Route::get('/admin/penjualan/pagination', [PenjualanController::class, 'getAllDataPenjualan']);
+Route::get('/admin/laporan/pagination', [LaporanController::class, 'getAllLaporan']);
 
+Route::get('test/image', [LaporanController::class, 'generateImage']);
+Route::get('test/pdf', [LaporanController::class, 'generatePdf']);
+Route::get('test/pdfB3', [LaporanController::class, 'generatePdfB3']);
 
 // Route::group(['middleware' => 'auth:api', 'prefix' => 'auth'], function () {
     Route::apiResource('/admin//dashboard', DashboardController::class);

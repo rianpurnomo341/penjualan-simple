@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('penjualan', function (Blueprint $table) {
             $table->bigIncrements("id_penjualan");
+            $table->foreignId("user_id")->nullable()->constrained("users", "id")->onUpdate("cascade")->onDelete("no action");
             $table->string("kode_penjualan");
             $table->date("tanggal_penjualan");
             $table->integer("total_penjualan");
