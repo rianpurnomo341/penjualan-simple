@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId("pembelian_id")->nullable()->constrained("pembelian", "id_pembelian")->onUpdate("cascade")->onDelete("no action");
             $table->integer('qty');
             $table->integer('harga_pembelian');
+            $table->integer('total_harga');
             $table->timestamps();
         });
     }

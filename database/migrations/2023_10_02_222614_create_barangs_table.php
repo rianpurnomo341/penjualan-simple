@@ -20,10 +20,12 @@ return new class extends Migration
             $table->foreignId("satuan_id")->nullable()->constrained("satuan", "id_satuan")->onUpdate("cascade")->onDelete("no action");
             $table->integer('qty')->default(0);
             $table->integer("diskon")->nullable();
+            $table->integer("harga_rekomendasi")->nullable();
             $table->integer("harga_before_diskon");
             $table->integer("harga_after_diskon");
             $table->date("tgl_kadaluarsa");
             $table->text("deskripsi")->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

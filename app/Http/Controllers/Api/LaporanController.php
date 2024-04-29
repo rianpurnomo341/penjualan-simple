@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 
 use Dompdf\Dompdf;
+use Twilio\Rest\Client;
 use TCPDF;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
@@ -12,13 +13,18 @@ use App\Models\Laporan;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use App\Jobs\SendTwilioMessageJob;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Response;
 
 class LaporanController extends Controller
 {
     public function index(Request $request)
     {
         try {
-            $Laporan = Laporan::with('pembelian', 'penjualan');
+            $Laporan = Laporan::with('pembelian', 'penjualan', 'user_admin');
 
             if ($request->bulan) {
                 $Laporan = $Laporan
@@ -140,15 +146,28 @@ class LaporanController extends Controller
         // Render the HTML as PDF
         $dompdf->render();
 
-        // Output the generated PDF to a file
-        $outputFilePath = $outputFilename; // Use the desired file path within the storage directory
+        // Output the generated PDF to Browser
+        // $dompdf->stream($outputFilename);
+        // Get the PDF content
+        $pdfContent = $dompdf->output();
+        // Save the PDF to a file
+        $pdfPath = storage_path("app/nota_penjualan/{$outputFilename}");
+        $pdfPath = str_replace('/', DIRECTORY_SEPARATOR, $pdfPath);
+        
+        file_put_contents($pdfPath, $pdfContent);
+        
+        Log::info("Twilio PDF file PATH: {$pdfPath}");
+        $pdfPath = str_replace('/', DIRECTORY_SEPARATOR, $pdfPath);
 
-        // Save the PDF file to Laravel's storage
-        $pdfContent = $dompdf->output(['compress' => 0, 'output_type' => 'S']);
-        Storage::put($outputFilePath, $pdfContent);
+        // Get the directory name
+        $lastDir = basename(dirname($pdfPath));
 
-        // If you need to return the file path for further use, you can return it like this:
-        return Storage::url($outputFilePath);
+        // Get the document name
+        $docName = basename($pdfPath);
+
+        // Merge the last directory name and document name with the desired format
+        $mergedPath = 'storage'. DIRECTORY_SEPARATOR .$lastDir . DIRECTORY_SEPARATOR . $docName;
+        return $mergedPath;
     }
 
 
@@ -170,8 +189,10 @@ class LaporanController extends Controller
             $stuffBought = [
                 (object) ['name' => 'Laptop', 'qty' => 2, 'price' => '$1000', 'disc' => '$200', 'totalPrice' => '$1800'],
                 (object) ['name' => 'Mouse', 'qty' => 1, 'price' => '$20', 'disc' => '$0', 'totalPrice' => '$20'],
+                (object) ['name' => 'Laptop', 'qty' => 2, 'price' => '$1000', 'disc' => '$200', 'totalPrice' => '$1800'],
+                (object) ['name' => 'Mouse', 'qty' => 1, 'price' => '$20', 'disc' => '$0', 'totalPrice' => '$20'],
             ];
-
+            // rochim todo send message to wa 
             // Generate HTML content (same as previous example)
             $htmlContent = '<style>';
             $htmlContent .= 'table { border-collapse: collapse; width: 100%; }';
@@ -198,12 +219,35 @@ class LaporanController extends Controller
 
             // Add footer with greetings and NB note
             $htmlContent .= '<footer>';
-            $htmlContent .= '<p>Greetings from Toko Muliya!</p>';
-            $htmlContent .= '<p>NB: This is an important note.</p>';
+            $htmlContent .= '<p>terimakasih telah berbelanja di toko kami!</p>';
+            $htmlContent .= '<p>NB: barang yang telah dibeli tidak dapat dikembalikan atau ditukar kembali.</p>';
             $htmlContent .= '</footer>';
 
             // Generate PDF
-            $this->generatePdfFromHtml($htmlContent, 'output.pdf');
+            $filename = 'output.pdf';
+            $pdfFilePath = $this->generatePdfFromHtml($htmlContent, $filename);
+            $bodyMessage = "testing apakah ini masuk ke whatsapp";
+            $twilioTo = '+6282154441119';
+
+            $pdfPath = str_replace('/', DIRECTORY_SEPARATOR, url($pdfFilePath));
+            // Queue::push(new SendTwilioMessageJob($twilioTo, $bodyMessage, url($pdfFilePath)));
+            SendTwilioMessageJob::dispatchSync($twilioTo, $bodyMessage, $pdfPath);
+            $storageDirectory = 'nota_penjualan/';
+
+            if (Storage::exists($storageDirectory . $filename)) {
+                // Load the PDF file content
+                $pdfContent = Storage::get($storageDirectory . $filename);
+        
+                // Return a response with the PDF content and appropriate headers
+                return new Response($pdfContent, 200, [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'inline; filename="'.$filename.'"',
+                ]);
+            } else {
+                // Handle file not found error
+                return response()->json(['error' => 'File not found'], 404);
+            }
+
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
         }
@@ -292,16 +336,56 @@ class LaporanController extends Controller
         try {
             $limit = max(1, intval($request->limit));
             $pageNumber = max(0, intval($request->pageNumber));
+            $filter = $request->filter;
 
             $offset = $pageNumber * $limit;
 
+            $dataLaporan = Laporan::with('pembelian', 'penjualan', 'user_admin');
+
+            if ($filter) {
+
+                if ($filter['bulan'] || $filter['tahun']) {
+
+                    if ($filter['bulan']) {
+                        $dataLaporan = $dataLaporan->whereMonth('created_at', $filter['bulan']);
+                    }
+                    if ($filter['tahun']) {
+                        $dataLaporan = $dataLaporan->whereYear('created_at', $filter['tahun']);
+                    }
+
+                } else if ($filter->tahun) {
+                    $dataLaporan = $dataLaporan
+                        ->whereYear('created_at', $filter->tahun);
+
+                } else if ($filter->tanggal_laporan) {
+                    $dataLaporan = $dataLaporan->whereDate('created_at', $filter->tanggal_laporan);
+                }
+
+
+                if ($filter['global_search']) {
+                    $value = '%'.$filter['global_search'].'%';
+                    $dataLaporan->where('kode_laporan', 'LIKE', $value)
+                    ->orWhere('nama_operasi', 'LIKE', $value)
+                    ->orWhere('credit', 'LIKE', $value)
+                    ->orWhere('debit', 'LIKE', $value)
+                    ->orWhere('saldo', 'LIKE', $value)
+                    ->orWhereHas('penjualan', function ($query) use ($value) {
+                        $query->where('kode_penjualan', 'LIKE', $value);
+                    })
+                    ->orWhereHas('pembelian', function ($query) use ($value) {
+                        $query->where('kode_pembelian', 'LIKE', $value);
+                    });
+                }
+
+            }
+
             // Fetch total data count
-            $totalDataCount = Laporan::count();
+            $totalDataCount = $dataLaporan->count();
 
             // Calculate total number of pages
             $totalPages = ceil($totalDataCount / $limit);
 
-            $dataLaporan = Laporan::with('pembelian', 'penjualan')
+            $dataLaporan = $dataLaporan
                 ->orderBy('created_at', 'asc')
                 ->skip($offset)
                 ->take($limit)

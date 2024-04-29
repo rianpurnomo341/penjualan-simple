@@ -23,4 +23,9 @@ class Pembelian extends Model
         return $this->hasMany(DetailPembelian::class, 'pembelian_id', 'id_pembelian');
     }
 
+    public function user_admin()
+    {
+        return $this->hasMany(User::class, 'id', 'user_admin')->select('id', 'name', 'username');
+    }
+
 }

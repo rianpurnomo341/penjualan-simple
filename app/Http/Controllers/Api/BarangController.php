@@ -5,17 +5,19 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ApiResource;
 use App\Models\Barang;
+use App\Models\Pembelian;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class BarangController extends Controller
 {
     public function index()
     {
         try {
-            $barang = Barang::with('kategori', 'satuan')->where('deleted_at', '')->get();
+            $barang = Barang::with('kategori', 'satuan')->whereNull('deleted_at')->get();
             return new ApiResource(true, 'Berhasil Menampilkan Data', $barang);
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
@@ -44,7 +46,7 @@ class BarangController extends Controller
             $currentDateTime = Carbon::now()->timestamp; // Get current datetime as integer
             $imageName = $currentDateTime . '_' . $request->input('display.file_name');
             $barangTerakhir = Barang::latest()->first();
-            $kode_barang = $barangTerakhir ? 'KD-BR-' . preg_replace('/[^0-9]/', '', $barangTerakhir->kode_barang) + 1 : 'KD-BR-1';
+            $kode_barang = $barangTerakhir ? 'KD-BR-' . intval(preg_replace('/[^0-9]/', '', $barangTerakhir->kode_barang)) + 1 : 'KD-BR-1';
 
             $imagePath = 'display/' . $imageName;
             Storage::disk('public')->put($imagePath, $imageData);
@@ -75,7 +77,7 @@ class BarangController extends Controller
     {
         try {
             $barang = Barang::where('id_barang', $barang->id_barang)->with('kategori', 'satuan')
-                ->where('deleted_at', '')
+                ->whereNull('deleted_at')
                 ->get();
             return new ApiResource(true, 'Berhasil Menampilkan Detail Data', $barang);
         } catch (QueryException $e) {
@@ -104,11 +106,13 @@ class BarangController extends Controller
             // Find the Barang model instance by ID
             $barang = Barang::findOrFail($barang->id_barang);
 
-            // Update the display image if provided
-            if ($request->has('display')) {
-                $displayData = $request->input('display');
 
-                if (isset ($displayData['data']) && isset ($displayData['file_name'])) {
+            if ($request->is_update_image) {
+                // update image
+                // Update the display image if provided
+                if ($request->has('display') && isset($request->display['data']) && isset($request->display['file_name'])) {
+                    $displayData = $request->input('display');
+
                     // Decode and store the new image data
                     $imageData = base64_decode($displayData['data']);
                     $currentDateTime = Carbon::now()->timestamp; // Get current datetime as integer
@@ -124,6 +128,13 @@ class BarangController extends Controller
 
                     // Update the display property in the Barang model
                     $barang->display = $imagePath;
+
+                } else {
+                    // remove stored image
+                    if ($barang->display) {
+                        Storage::disk('public')->delete($barang->display);
+                        $barang->display = null;
+                    }
                 }
             }
 
@@ -163,7 +174,7 @@ class BarangController extends Controller
                 ]);
 
                 return new ApiResource(true, 'Data Berhasil Dihapus', $barang);
-                
+
             } else {
                 // Handle case where record with the specified ID couldn't be found
                 return new ApiResource(false, 'Barang tidak ditemukan', $barang);
@@ -171,5 +182,46 @@ class BarangController extends Controller
         } catch (QueryException $e) {
             return new ApiResource(false, $e->getMessage(), []);
         }
+    }
+
+    public function generateSugestedPrice($barang)
+    {
+        $barang_id = $barang->id_barang;
+        $getPembelian = Pembelian::with([
+            'detail_pembelian' => function ($query) use ($barang_id) {
+                $query->where('barang_id', $barang_id);
+            }
+        ])
+            ->with('detail_pembelian')
+            ->whereNull('deleted_at')
+            ->get();
+
+        $harga_suggested = 0; // Fixed variable name
+        $total_qty = 0;
+        if ($getPembelian->count() > 0) {
+            foreach ($getPembelian as $pembelian) { // Renamed $value to $pembelian
+                if ($pembelian->detail_pembelian->count() > 0) {
+                    foreach ($pembelian->detail_pembelian as $dt_pembelian) { // Renamed $key to $dt_pembelian
+
+                        if (($dt_pembelian->barang_id == $barang_id) && isset($dt_pembelian->harga_pembelian) && ($dt_pembelian->qty > 0)) {
+                            $harga_suggested += intval($dt_pembelian->total_harga);
+                            $total_qty += intval($dt_pembelian->qty);
+
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($total_qty > 0) { // Avoid dividing by zero
+            return ceil($harga_suggested / $total_qty);
+        } else {
+            return 0; // Return 0 if $total_qty is 0
+        }
+
+        // Barang::find($barang_id)->update([
+        //     'harga_rekomendasi' => $harga_sugested
+        // ]);
+
     }
 }

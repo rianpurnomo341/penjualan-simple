@@ -22,4 +22,9 @@ class Laporan extends Model
     {
         return $this->belongsTo(Penjualan::class, 'penjualan_id', 'id_penjualan');
     }
+
+    public function user_admin()
+    {
+        return $this->hasMany(User::class, 'id', 'user_admin')->select('id', 'name', 'username');
+    }
 }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId("penjualan_id")->nullable()->constrained("penjualan", "id_penjualan")->onUpdate("cascade")->onDelete("no action");
             $table->integer('qty');
             $table->integer('harga_penjualan');
+            $table->integer('total_harga');
             $table->timestamps();
         });
     }

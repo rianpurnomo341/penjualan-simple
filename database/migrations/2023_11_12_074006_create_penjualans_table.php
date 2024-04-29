@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('penjualan', function (Blueprint $table) {
             $table->bigIncrements("id_penjualan");
-            $table->foreignId("user_id")->nullable()->constrained("users", "id")->onUpdate("cascade")->onDelete("no action");
+            $table->foreignId("user_admin")->nullable()->constrained("users", "id")->onUpdate("cascade")->onDelete("no action");
             $table->string("kode_penjualan");
             $table->date("tanggal_penjualan");
             $table->integer("total_penjualan");
             $table->integer("jml_bayar_penjualan");
             $table->integer("jml_kembalian_penjualan");
+            $table->boolean("draft")->default(false);
+            $table->softDeletes();
             $table->timestamps();
         });
     }

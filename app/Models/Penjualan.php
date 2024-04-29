@@ -17,4 +17,8 @@ class Penjualan extends Model
     {
         return $this->hasMany(DetailPenjualan::class, 'penjualan_id', 'id_penjualan');
     }
+    public function user_admin()
+    {
+        return $this->hasMany(User::class, 'id', 'user_admin')->select('id', 'name', 'username');
+    }
 }

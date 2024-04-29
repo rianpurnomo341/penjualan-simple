@@ -14,12 +14,13 @@ return new class extends Migration
         Schema::create('pembelian', function (Blueprint $table) {
             $table->bigIncrements("id_pembelian");
             $table->string("kode_pembelian");
-            $table->foreignId("user_id")->nullable()->constrained("users", "id")->onUpdate("cascade")->onDelete("no action");
+            $table->foreignId("user_admin")->nullable()->constrained("users", "id")->onUpdate("cascade")->onDelete("no action");
             $table->foreignId("suplier_id")->nullable()->constrained("suplier", "id_suplier")->onUpdate("cascade")->onDelete("no action");
             $table->date("tanggal_pembelian");
             $table->integer("total_pembelian");
             $table->integer("jml_bayar_pembelian");
             $table->integer("jml_kembalian_pembelian");
+            $table->softDeletes();
             $table->timestamps();
         });
     }
